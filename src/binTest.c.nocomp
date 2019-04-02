@@ -1,0 +1,84 @@
+#include <stdio.h>
+#include <stdint.h>
+#include <stdlib.h>
+void printBits(size_t const size, void const * const ptr);
+static char* toBinary(int num, int size);
+
+int main(int argc, char** argv)
+{
+	/*
+	int32_t num = 0b101;
+	printf("%d\n",num);
+	num = num << 3;
+	printf("%u\n",num);
+	printBits(sizeof(num), &num);
+	*/
+
+	if(argc > 2)
+	{
+		int num = atoi( *(argv+1) );
+		int sz = atoi( *(argv+2) );
+		char* bits = toBinary(num, sz);
+		printf("%d -> %s\n", num, bits);
+	}
+
+	return 0;
+}
+
+void printBits(size_t const size, void const * const ptr)
+{
+    unsigned char *b = (unsigned char*) ptr;
+    unsigned char byte;
+    int i, j;
+
+    for (i=size-1;i>=0;i--)
+    {
+        for (j=7;j>=0;j--)
+        {
+            byte = (b[i] >> j) & 1;
+            printf("%u", byte);
+        }
+    }
+    puts("");
+}
+
+char* getBits(size_t const size, void const * const ptr)
+{
+    unsigned char *b = (unsigned char*) ptr;
+    unsigned char *byte = calloc(size+1, sizeof(unsigned char));
+    int i, j;
+
+    for (i=size-1;i>=0;i--)
+    {
+        for (j=7;j>=0;j--)
+        {
+            byte[i] = (b[i] >> j) & 1;
+        }
+    }
+    return byte;
+}
+
+static char* toBinary(int num, int size)
+{
+	char* res = calloc(size + 1, sizeof(char));
+	int temp = num;
+
+	if(num < 0)
+	{
+		temp = (num*-1)-1;
+	}
+
+	for(int j = 0; j < size; j++)
+	{
+		*(res+j) = (num < 0) ? '1' : '0';
+	}
+
+	int i = 0;
+	while(temp > 0)
+	{
+		*(res+(size-1-i)) = (num < 0) ? '1'-temp%2 : '0'+temp%2;
+		temp = temp >> 1;
+		i++;
+	}
+	return res;
+}

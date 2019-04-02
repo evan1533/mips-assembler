@@ -1,0 +1,25 @@
+andi      $s3,  $s3,  -9516
+lw        $t1,  1028($s3)
+sub       $t3,  $s1,  $t2
+add       $s3,  $t3,  $s0
+and       $t2,  $s2,  $s3
+addi      $s2,  $t3,  -895
+lui       $t2,  -6120
+and       $s3,  $s0,  $t0
+and       $t0,  $t1,  $s3
+sub       $t1,  $t2,  $t0
+addi      $s0,  $t2,  1958
+addi      $t1,  $t2,  11020
+lw        $t3,  7454($t3)
+add       $t1,  $s0,  $s2
+lw        $t3,  -4084($t2)
+addi      $s2,  $t3,  -255
+add       $s3,  $s2,  $t2
+lui       $s0,  -666
+addi      $s0,  $t3,  -445
+andi      $t0,  $t1,  -15866
+sub       $s2,  $s3,  $s3
+addi      $t1,  $t3,  12973
+andi      $t0,  $t3,  -12345
+and       $s3,  $s3,  $t3
+lui       $t1,  -2154
