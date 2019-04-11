@@ -21,15 +21,6 @@ static char* opcodeTable[NUM_INSTRUCTIONS] = {
 static char* functionTable[NUM_INSTRUCTIONS] = {
 	"100000", "100100", "100010", NULL, NULL, NULL};
 
-static ASMInstruction instrTable[NUM_INSTRUCTIONS] = {
-   {  "add", "000000", "100000"},
-   {  "and", "000000", "100100"}, 
-   {  "sub", "000000", "100010"},
-   { "addi", "000000",     NULL},
-   { "andi", "000000",     NULL},
-   {  "lui", "000000",     NULL},
-   {   "lw", "000000",     NULL} };
-
 static uint8_t findRegister(char* rName);
 static char* findOpcode(char* inst);
 static char* findFunct(char* inst);
