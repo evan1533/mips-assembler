@@ -4,7 +4,6 @@
 #include <stdio.h>     // your approach to the problem.
 #include <assert.h>
 
-#include "ASMInstruction.h"
 #include "ASMParser.h"
 
 #define NUM_REGISTERS 32
