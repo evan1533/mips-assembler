@@ -1,6 +1,25 @@
-Testing with:  lui       $t2,  -9170
+Testing with:  lw        $s3,  -10368($t1)
 Student answer:
-ASMInstruction: lui       $t2,  -9170
+ASMInstruction: lw        $s3,  -10368($t1)
+   Mnemonic:  lw
+   Opcode:    100011
+   RD:        NULL
+   rd:        255
+   rdName:    NULL
+   RS:        01001
+   rs:         9
+   rsName:    $t1
+   RT:        10011
+   rt:        19
+   rtName:    $s3
+   Funct:     NULL
+   IMM:       1101011110000000
+   Imm:       -10368
+Score for this analysis: 60 / 60
+
+Testing with:  lui       $s2,  5355
+Student answer:
+ASMInstruction: lui       $s2,  5355
    Mnemonic:  lui
    Opcode:    001111
    RD:        NULL
@@ -9,74 +28,93 @@ ASMInstruction: lui       $t2,  -9170
    RS:        00000
    rs:         0
    rsName:    NULL
-   RT:        01010
-   rt:        10
-   rtName:    $t2
+   RT:        10010
+   rt:        18
+   rtName:    $s2
    Funct:     NULL
-   IMM:       1101110000101110
-   Imm:       -9170
+   IMM:       0001010011101011
+   Imm:       5355
 Score for this analysis: 60 / 60
 
-Testing with:  sub       $t1,  $t1,  $t3
+Testing with:  sub       $t0,  $t0,  $t1
 Student answer:
-ASMInstruction: sub       $t1,  $t1,  $t3
+ASMInstruction: sub       $t0,  $t0,  $t1
    Mnemonic:  sub
    Opcode:    000000
-   RD:        01001
-   rd:         9
-   rdName:    $t1
-   RS:        01001
-   rs:         9
-   rsName:    $t1
-   RT:        01011
-   rt:        11
-   rtName:    $t3
+   RD:        01000
+   rd:         8
+   rdName:    $t0
+   RS:        01000
+   rs:         8
+   rsName:    $t0
+   RT:        01001
+   rt:         9
+   rtName:    $t1
    Funct:     100010
    IMM:       NULL
    Imm:       0
 Score for this analysis: 60 / 60
 
-Testing with:  add       $t3,  $s0,  $s0
+Testing with:  add       $t3,  $s3,  $t0
 Student answer:
-ASMInstruction: add       $t3,  $s0,  $s0
+ASMInstruction: add       $t3,  $s3,  $t0
    Mnemonic:  add
    Opcode:    000000
    RD:        01011
    rd:        11
    rdName:    $t3
-   RS:        10000
-   rs:        16
-   rsName:    $s0
-   RT:        10000
-   rt:        16
-   rtName:    $s0
+   RS:        10011
+   rs:        19
+   rsName:    $s3
+   RT:        01000
+   rt:         8
+   rtName:    $t0
    Funct:     100000
    IMM:       NULL
    Imm:       0
 Score for this analysis: 60 / 60
 
-Testing with:  addi      $t3,  $t0,  -11724
+Testing with:  addi      $s1,  $t2,  -14792
 Student answer:
-ASMInstruction: addi      $t3,  $t0,  -11724
+ASMInstruction: addi      $s1,  $t2,  -14792
    Mnemonic:  addi
    Opcode:    001000
    RD:        NULL
    rd:        255
    rdName:    NULL
+   RS:        01010
+   rs:        10
+   rsName:    $t2
+   RT:        10001
+   rt:        17
+   rtName:    $s1
+   Funct:     NULL
+   IMM:       1100011000111000
+   Imm:       -14792
+Score for this analysis: 60 / 60
+
+Testing with:  and       $s1,  $t0,  $s2
+Student answer:
+ASMInstruction: and       $s1,  $t0,  $s2
+   Mnemonic:  and
+   Opcode:    000000
+   RD:        10001
+   rd:        17
+   rdName:    $s1
    RS:        01000
    rs:         8
    rsName:    $t0
-   RT:        01011
-   rt:        11
-   rtName:    $t3
-   Funct:     NULL
-   IMM:       1101001000110100
-   Imm:       -11724
+   RT:        10010
+   rt:        18
+   rtName:    $s2
+   Funct:     100100
+   IMM:       NULL
+   Imm:       0
 Score for this analysis: 60 / 60
 
-Testing with:  andi      $t2,  $t3,  -2938
+Testing with:  andi      $t3,  $t3,  6961
 Student answer:
-ASMInstruction: andi      $t2,  $t3,  -2938
+ASMInstruction: andi      $t3,  $t3,  6961
    Mnemonic:  andi
    Opcode:    001100
    RD:        NULL
@@ -85,101 +123,120 @@ ASMInstruction: andi      $t2,  $t3,  -2938
    RS:        01011
    rs:        11
    rsName:    $t3
-   RT:        01010
-   rt:        10
-   rtName:    $t2
+   RT:        01011
+   rt:        11
+   rtName:    $t3
    Funct:     NULL
-   IMM:       1111010010000110
-   Imm:       -2938
+   IMM:       0001101100110001
+   Imm:       6961
 Score for this analysis: 60 / 60
 
-Testing with:  and       $t2,  $s0,  $s0
+Testing with:  add       $t1,  $t1,  $s3
 Student answer:
-ASMInstruction: and       $t2,  $s0,  $s0
-   Mnemonic:  and
+ASMInstruction: add       $t1,  $t1,  $s3
+   Mnemonic:  add
    Opcode:    000000
-   RD:        01010
-   rd:        10
-   rdName:    $t2
-   RS:        10000
-   rs:        16
-   rsName:    $s0
-   RT:        10000
-   rt:        16
-   rtName:    $s0
-   Funct:     100100
+   RD:        01001
+   rd:         9
+   rdName:    $t1
+   RS:        01001
+   rs:         9
+   rsName:    $t1
+   RT:        10011
+   rt:        19
+   rtName:    $s3
+   Funct:     100000
    IMM:       NULL
    Imm:       0
 Score for this analysis: 60 / 60
 
-Testing with:  lw        $t1,  -1710($s1)
+Testing with:  addi      $t2,  $s1,  481
 Student answer:
-ASMInstruction: lw        $t1,  -1710($s1)
-   Mnemonic:  lw
-   Opcode:    100011
+ASMInstruction: addi      $t2,  $s1,  481
+   Mnemonic:  addi
+   Opcode:    001000
    RD:        NULL
    rd:        255
    rdName:    NULL
    RS:        10001
    rs:        17
    rsName:    $s1
-   RT:        01001
-   rt:         9
-   rtName:    $t1
+   RT:        01010
+   rt:        10
+   rtName:    $t2
    Funct:     NULL
-   IMM:       1111100101010010
-   Imm:       -1710
+   IMM:       0000000111100001
+   Imm:       481
 Score for this analysis: 60 / 60
 
-Testing with:  lw        $t0,  -1164($s1)
+Testing with:  lw        $t2,  8851($t1)
 Student answer:
-ASMInstruction: lw        $t0,  -1164($s1)
+ASMInstruction: lw        $t2,  8851($t1)
    Mnemonic:  lw
    Opcode:    100011
    RD:        NULL
    rd:        255
    rdName:    NULL
-   RS:        10001
-   rs:        17
-   rsName:    $s1
-   RT:        01000
-   rt:         8
-   rtName:    $t0
-   Funct:     NULL
-   IMM:       1111101101110100
-   Imm:       -1164
-Score for this analysis: 60 / 60
-
-Testing with:  lui       $s1,  -376
-Student answer:
-ASMInstruction: lui       $s1,  -376
-   Mnemonic:  lui
-   Opcode:    001111
-   RD:        NULL
-   rd:        255
-   rdName:    NULL
-   RS:        00000
-   rs:         0
-   rsName:    NULL
-   RT:        10001
-   rt:        17
-   rtName:    $s1
-   Funct:     NULL
-   IMM:       1111111010001000
-   Imm:       -376
-Score for this analysis: 60 / 60
-
-Testing with:  add       $s0,  $t1,  $t2
-Student answer:
-ASMInstruction: add       $s0,  $t1,  $t2
-   Mnemonic:  add
-   Opcode:    000000
-   RD:        10000
-   rd:        16
-   rdName:    $s0
    RS:        01001
    rs:         9
    rsName:    $t1
+   RT:        01010
+   rt:        10
+   rtName:    $t2
+   Funct:     NULL
+   IMM:       0010001010010011
+   Imm:       8851
+Score for this analysis: 60 / 60
+
+Testing with:  andi      $t2,  $s2,  65
+Student answer:
+ASMInstruction: andi      $t2,  $s2,  65
+   Mnemonic:  andi
+   Opcode:    001100
+   RD:        NULL
+   rd:        255
+   rdName:    NULL
+   RS:        10010
+   rs:        18
+   rsName:    $s2
+   RT:        01010
+   rt:        10
+   rtName:    $t2
+   Funct:     NULL
+   IMM:       0000000001000001
+   Imm:       65
+Score for this analysis: 60 / 60
+
+Testing with:  add       $t1,  $t1,  $t1
+Student answer:
+ASMInstruction: add       $t1,  $t1,  $t1
+   Mnemonic:  add
+   Opcode:    000000
+   RD:        01001
+   rd:         9
+   rdName:    $t1
+   RS:        01001
+   rs:         9
+   rsName:    $t1
+   RT:        01001
+   rt:         9
+   rtName:    $t1
+   Funct:     100000
+   IMM:       NULL
+   Imm:       0
+Score for this analysis: 60 / 60
+
+Testing with:  add       $t1,  $s3,  $t2
+Student answer:
+ASMInstruction: add       $t1,  $s3,  $t2
+   Mnemonic:  add
+   Opcode:    000000
+   RD:        01001
+   rd:         9
+   rdName:    $t1
+   RS:        10011
+   rs:        19
+   rsName:    $s3
    RT:        01010
    rt:        10
    rtName:    $t2
@@ -188,47 +245,218 @@ ASMInstruction: add       $s0,  $t1,  $t2
    Imm:       0
 Score for this analysis: 60 / 60
 
-Testing with:  andi      $t2,  $s3,  4526
+Testing with:  addi      $t3,  $t3,  3045
 Student answer:
-ASMInstruction: andi      $t2,  $s3,  4526
-   Mnemonic:  andi
-   Opcode:    001100
+ASMInstruction: addi      $t3,  $t3,  3045
+   Mnemonic:  addi
+   Opcode:    001000
    RD:        NULL
    rd:        255
    rdName:    NULL
-   RS:        10011
-   rs:        19
-   rsName:    $s3
+   RS:        01011
+   rs:        11
+   rsName:    $t3
+   RT:        01011
+   rt:        11
+   rtName:    $t3
+   Funct:     NULL
+   IMM:       0000101111100101
+   Imm:       3045
+Score for this analysis: 60 / 60
+
+Testing with:  addi      $s2,  $t1,  -8011
+Student answer:
+ASMInstruction: addi      $s2,  $t1,  -8011
+   Mnemonic:  addi
+   Opcode:    001000
+   RD:        NULL
+   rd:        255
+   rdName:    NULL
+   RS:        01001
+   rs:         9
+   rsName:    $t1
+   RT:        10010
+   rt:        18
+   rtName:    $s2
+   Funct:     NULL
+   IMM:       1110000010110101
+   Imm:       -8011
+Score for this analysis: 60 / 60
+
+Testing with:  add       $s0,  $t1,  $t0
+Student answer:
+ASMInstruction: add       $s0,  $t1,  $t0
+   Mnemonic:  add
+   Opcode:    000000
+   RD:        10000
+   rd:        16
+   rdName:    $s0
+   RS:        01001
+   rs:         9
+   rsName:    $t1
+   RT:        01000
+   rt:         8
+   rtName:    $t0
+   Funct:     100000
+   IMM:       NULL
+   Imm:       0
+Score for this analysis: 60 / 60
+
+Testing with:  lui       $t2,  15147
+Student answer:
+ASMInstruction: lui       $t2,  15147
+   Mnemonic:  lui
+   Opcode:    001111
+   RD:        NULL
+   rd:        255
+   rdName:    NULL
+   RS:        00000
+   rs:         0
+   rsName:    NULL
    RT:        01010
    rt:        10
    rtName:    $t2
    Funct:     NULL
-   IMM:       0001000110101110
-   Imm:       4526
+   IMM:       0011101100101011
+   Imm:       15147
 Score for this analysis: 60 / 60
 
-Testing with:  sub       $t2,  $s1,  $t3
+Testing with:  and       $s2,  $t2,  $t0
 Student answer:
-ASMInstruction: sub       $t2,  $s1,  $t3
+ASMInstruction: and       $s2,  $t2,  $t0
+   Mnemonic:  and
+   Opcode:    000000
+   RD:        10010
+   rd:        18
+   rdName:    $s2
+   RS:        01010
+   rs:        10
+   rsName:    $t2
+   RT:        01000
+   rt:         8
+   rtName:    $t0
+   Funct:     100100
+   IMM:       NULL
+   Imm:       0
+Score for this analysis: 60 / 60
+
+Testing with:  addi      $t3,  $t2,  4071
+Student answer:
+ASMInstruction: addi      $t3,  $t2,  4071
+   Mnemonic:  addi
+   Opcode:    001000
+   RD:        NULL
+   rd:        255
+   rdName:    NULL
+   RS:        01010
+   rs:        10
+   rsName:    $t2
+   RT:        01011
+   rt:        11
+   rtName:    $t3
+   Funct:     NULL
+   IMM:       0000111111100111
+   Imm:       4071
+Score for this analysis: 60 / 60
+
+Testing with:  add       $t1,  $s0,  $t2
+Student answer:
+ASMInstruction: add       $t1,  $s0,  $t2
+   Mnemonic:  add
+   Opcode:    000000
+   RD:        01001
+   rd:         9
+   rdName:    $t1
+   RS:        10000
+   rs:        16
+   rsName:    $s0
+   RT:        01010
+   rt:        10
+   rtName:    $t2
+   Funct:     100000
+   IMM:       NULL
+   Imm:       0
+Score for this analysis: 60 / 60
+
+Testing with:  addi      $s3,  $s2,  -14155
+Student answer:
+ASMInstruction: addi      $s3,  $s2,  -14155
+   Mnemonic:  addi
+   Opcode:    001000
+   RD:        NULL
+   rd:        255
+   rdName:    NULL
+   RS:        10010
+   rs:        18
+   rsName:    $s2
+   RT:        10011
+   rt:        19
+   rtName:    $s3
+   Funct:     NULL
+   IMM:       1100100010110101
+   Imm:       -14155
+Score for this analysis: 60 / 60
+
+Testing with:  addi      $t1,  $t2,  8333
+Student answer:
+ASMInstruction: addi      $t1,  $t2,  8333
+   Mnemonic:  addi
+   Opcode:    001000
+   RD:        NULL
+   rd:        255
+   rdName:    NULL
+   RS:        01010
+   rs:        10
+   rsName:    $t2
+   RT:        01001
+   rt:         9
+   rtName:    $t1
+   Funct:     NULL
+   IMM:       0010000010001101
+   Imm:       8333
+Score for this analysis: 60 / 60
+
+Testing with:  sub       $t2,  $s0,  $t2
+Student answer:
+ASMInstruction: sub       $t2,  $s0,  $t2
    Mnemonic:  sub
    Opcode:    000000
    RD:        01010
    rd:        10
    rdName:    $t2
-   RS:        10001
-   rs:        17
-   rsName:    $s1
-   RT:        01011
-   rt:        11
-   rtName:    $t3
+   RS:        10000
+   rs:        16
+   rsName:    $s0
+   RT:        01010
+   rt:        10
+   rtName:    $t2
    Funct:     100010
    IMM:       NULL
    Imm:       0
 Score for this analysis: 60 / 60
 
-Testing with:  lui       $s3,  6519
+Testing with:  addi      $s2,  $s1,  -14701
 Student answer:
-ASMInstruction: lui       $s3,  6519
+ASMInstruction: addi      $s2,  $s1,  -14701
+   Mnemonic:  addi
+   Opcode:    001000
+   RD:        NULL
+   rd:        255
+   rdName:    NULL
+   RS:        10001
+   rs:        17
+   rsName:    $s1
+   RT:        10010
+   rt:        18
+   rtName:    $s2
+   Funct:     NULL
+   IMM:       1100011010010011
+   Imm:       -14701
+Score for this analysis: 60 / 60
+
+Testing with:  lui       $s3,  -10814
+Student answer:
+ASMInstruction: lui       $s3,  -10814
    Mnemonic:  lui
    Opcode:    001111
    RD:        NULL
@@ -241,236 +469,8 @@ ASMInstruction: lui       $s3,  6519
    rt:        19
    rtName:    $s3
    Funct:     NULL
-   IMM:       0001100101110111
-   Imm:       6519
-Score for this analysis: 60 / 60
-
-Testing with:  andi      $t0,  $s0,  10793
-Student answer:
-ASMInstruction: andi      $t0,  $s0,  10793
-   Mnemonic:  andi
-   Opcode:    001100
-   RD:        NULL
-   rd:        255
-   rdName:    NULL
-   RS:        10000
-   rs:        16
-   rsName:    $s0
-   RT:        01000
-   rt:         8
-   rtName:    $t0
-   Funct:     NULL
-   IMM:       0010101000101001
-   Imm:       10793
-Score for this analysis: 60 / 60
-
-Testing with:  and       $t1,  $t1,  $s1
-Student answer:
-ASMInstruction: and       $t1,  $t1,  $s1
-   Mnemonic:  and
-   Opcode:    000000
-   RD:        01001
-   rd:         9
-   rdName:    $t1
-   RS:        01001
-   rs:         9
-   rsName:    $t1
-   RT:        10001
-   rt:        17
-   rtName:    $s1
-   Funct:     100100
-   IMM:       NULL
-   Imm:       0
-Score for this analysis: 60 / 60
-
-Testing with:  add       $t0,  $t2,  $s2
-Student answer:
-ASMInstruction: add       $t0,  $t2,  $s2
-   Mnemonic:  add
-   Opcode:    000000
-   RD:        01000
-   rd:         8
-   rdName:    $t0
-   RS:        01010
-   rs:        10
-   rsName:    $t2
-   RT:        10010
-   rt:        18
-   rtName:    $s2
-   Funct:     100000
-   IMM:       NULL
-   Imm:       0
-Score for this analysis: 60 / 60
-
-Testing with:  lw        $t2,  7334($t2)
-Student answer:
-ASMInstruction: lw        $t2,  7334($t2)
-   Mnemonic:  lw
-   Opcode:    100011
-   RD:        NULL
-   rd:        255
-   rdName:    NULL
-   RS:        01010
-   rs:        10
-   rsName:    $t2
-   RT:        01010
-   rt:        10
-   rtName:    $t2
-   Funct:     NULL
-   IMM:       0001110010100110
-   Imm:       7334
-Score for this analysis: 60 / 60
-
-Testing with:  sub       $t0,  $t3,  $t0
-Student answer:
-ASMInstruction: sub       $t0,  $t3,  $t0
-   Mnemonic:  sub
-   Opcode:    000000
-   RD:        01000
-   rd:         8
-   rdName:    $t0
-   RS:        01011
-   rs:        11
-   rsName:    $t3
-   RT:        01000
-   rt:         8
-   rtName:    $t0
-   Funct:     100010
-   IMM:       NULL
-   Imm:       0
-Score for this analysis: 60 / 60
-
-Testing with:  andi      $s1,  $t2,  15824
-Student answer:
-ASMInstruction: andi      $s1,  $t2,  15824
-   Mnemonic:  andi
-   Opcode:    001100
-   RD:        NULL
-   rd:        255
-   rdName:    NULL
-   RS:        01010
-   rs:        10
-   rsName:    $t2
-   RT:        10001
-   rt:        17
-   rtName:    $s1
-   Funct:     NULL
-   IMM:       0011110111010000
-   Imm:       15824
-Score for this analysis: 60 / 60
-
-Testing with:  add       $s3,  $s3,  $t3
-Student answer:
-ASMInstruction: add       $s3,  $s3,  $t3
-   Mnemonic:  add
-   Opcode:    000000
-   RD:        10011
-   rd:        19
-   rdName:    $s3
-   RS:        10011
-   rs:        19
-   rsName:    $s3
-   RT:        01011
-   rt:        11
-   rtName:    $t3
-   Funct:     100000
-   IMM:       NULL
-   Imm:       0
-Score for this analysis: 60 / 60
-
-Testing with:  addi      $t0,  $s3,  15363
-Student answer:
-ASMInstruction: addi      $t0,  $s3,  15363
-   Mnemonic:  addi
-   Opcode:    001000
-   RD:        NULL
-   rd:        255
-   rdName:    NULL
-   RS:        10011
-   rs:        19
-   rsName:    $s3
-   RT:        01000
-   rt:         8
-   rtName:    $t0
-   Funct:     NULL
-   IMM:       0011110000000011
-   Imm:       15363
-Score for this analysis: 60 / 60
-
-Testing with:  addi      $s1,  $s1,  -8741
-Student answer:
-ASMInstruction: addi      $s1,  $s1,  -8741
-   Mnemonic:  addi
-   Opcode:    001000
-   RD:        NULL
-   rd:        255
-   rdName:    NULL
-   RS:        10001
-   rs:        17
-   rsName:    $s1
-   RT:        10001
-   rt:        17
-   rtName:    $s1
-   Funct:     NULL
-   IMM:       1101110111011011
-   Imm:       -8741
-Score for this analysis: 60 / 60
-
-Testing with:  and       $s3,  $t2,  $t2
-Student answer:
-ASMInstruction: and       $s3,  $t2,  $t2
-   Mnemonic:  and
-   Opcode:    000000
-   RD:        10011
-   rd:        19
-   rdName:    $s3
-   RS:        01010
-   rs:        10
-   rsName:    $t2
-   RT:        01010
-   rt:        10
-   rtName:    $t2
-   Funct:     100100
-   IMM:       NULL
-   Imm:       0
-Score for this analysis: 60 / 60
-
-Testing with:  add       $s0,  $t1,  $s1
-Student answer:
-ASMInstruction: add       $s0,  $t1,  $s1
-   Mnemonic:  add
-   Opcode:    000000
-   RD:        10000
-   rd:        16
-   rdName:    $s0
-   RS:        01001
-   rs:         9
-   rsName:    $t1
-   RT:        10001
-   rt:        17
-   rtName:    $s1
-   Funct:     100000
-   IMM:       NULL
-   Imm:       0
-Score for this analysis: 60 / 60
-
-Testing with:  sub       $t1,  $t1,  $s2
-Student answer:
-ASMInstruction: sub       $t1,  $t1,  $s2
-   Mnemonic:  sub
-   Opcode:    000000
-   RD:        01001
-   rd:         9
-   rdName:    $t1
-   RS:        01001
-   rs:         9
-   rsName:    $t1
-   RT:        10010
-   rt:        18
-   rtName:    $s2
-   Funct:     100010
-   IMM:       NULL
-   Imm:       0
+   IMM:       1101010111000010
+   Imm:       -10814
 Score for this analysis: 60 / 60
 
 Scores:

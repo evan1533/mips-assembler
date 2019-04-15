@@ -2,6 +2,7 @@
 #define ASMPARSER_H
 #include "ParseResult.h"
 
+
 /**  Breaks up given MIPS32 assembly instruction and creates a proper 
  *   ParseResult object storing information about that instruction.
  * 
