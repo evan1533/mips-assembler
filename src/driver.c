@@ -1,137 +1,130 @@
-// driver.c for MIPS32 assembly instruction parser
-//
-// Requires:  Generate.h, Generate.o, ASMParser.h, ASMParser.o   <-- test harness
-//            ASMParser.h                                        <-- supplied
-//            ParseResult.h                                      <-- supplied
-//            ASMParser.c                                        <-- student file
-//            ParseResult.c                                      <-- student file
-//            + any other implementation files supplied by student
-//
-// Invocation options:
-//
-//    parse <asm code file> <results file name> [-repeat]
-//       param1:  name of file containing MIPS32 assembly instructions,
-//                one per line; created by driver.c as specified
-//       param2:  name of file to hold results from parser
-//       param3:  (optional) if absent, random valid assembly instructions will
-//                be generated and written to the specified input file, before
-//                the parser is executed;
-//                if present, a (presumably) preexisting input file will be used
-//
 #include <stdio.h>
+#include <stdbool.h>
 #include <stdlib.h>
 #include <string.h>
-#include <stdbool.h>
 
-#include "Generate.h"          // for generating test cases
-#include "ParseResult.h"       // for reporting parse results
-#include "ASMParser.h"         // for student's solution
-#include "Grader.h"            // for comparison/scoring logic
+#include "ASMParser.h"
+#include "ParseResult.h"
 
-#define MAX_INSTR_LENGTH  99
-#define NUM_TESTS         25   // modify this if you want to run more/fewer tests
+FILE* removeComments(FILE* f);
+void parseInstructions(FILE* f);
+void printRes(FILE* out, ParseResult* res);
 
-int main(int argc, char** argv) {
-    
-   uint32_t nTests = NUM_TESTS;
-   
-   // Validate command-line:
-   if ( argc < 3 || argc > 4 ) {
-      printf("Invocation:  parse <assembly instruction file> <parser results file> [-repeat]\n");
+int main(int argc, char** argv)
+{
+   char* inFile, outFile;
+
+   if ( argc >= 3 )
+   {
+      inFile = argv[1];
+      //outFile = argv[2];
+   }
+   else
+   {
       return 1;
    }
-   // Check for -repeat switch
-   bool repeatOn = false;
-   if ( argc == 4 && strcmp(argv[3], "-repeat") == 0 ) {
-      FILE* fp = fopen(argv[1], "r");
-      if ( fp == NULL ) {
-         printf("Could not open %s; generating random data.\n", argv[1]);
-         GenerateInput(argv[1], nTests);
-      }
-      else {
-         repeatOn = true;
-         fclose(fp);
-      }
-   }
-   else if ( argc == 4 ) {
-      printf("Unknown option: %s... ignoring it.\n", argv[3]);
-   }
-   
-   if ( !repeatOn ) {
-      GenerateInput(argv[1], nTests);
-   }
-   
-   // Open specified input file and verify it's available:
-   FILE* src   = fopen(argv[1], "r");
-   if ( src == NULL ) {
-      printf("Unable to find file %s... exiting.\n", argv[1]);
-      return 2;
-   }
-   // Open specified results file; taking its creation for granted:
-   FILE* results  = fopen(argv[2], "w");
-   
-   // Variables for instruction processing:
-   char asmInstruction[MAX_INSTR_LENGTH + 1];   // holder for current asm instruction
-   uint32_t totalScore = 0;                     // student's score for test run
-   uint32_t numInstructions = 0;                // assembly instruction count
-   
-   // Storage for a list of scores on the test cases:
-   uint32_t *scores = malloc(nTests*sizeof(uint32_t));
-   for (uint32_t idx = 0; idx < nTests; idx++) {
-		scores[idx] = -1;
-	}
 
-   // Process as long as there are more instructions:
-   while ( fgets(asmInstruction, MAX_INSTR_LENGTH + 1, src) != NULL ) {
-      
-      // erase trailing newline from string
-      asmInstruction[strlen(asmInstruction) - 1] = '\0';
-      
-      // Make backup copy of instruction string for grading:
-      char* asmCopy = calloc(MAX_INSTR_LENGTH + 1, sizeof(char));
-      strcpy(asmCopy, asmInstruction);
-      
-      fprintf(results, "Testing with:  %s\n", asmInstruction);
-      
-      // Invoke student's ASM parser on current instruction:
-      ParseResult* studentParse = parseASM(asmInstruction);
-      
-      // Check for NULL return:
-      if ( studentParse == NULL ) {
-			fprintf(results, "Error:  parseASM() returned NULL for \"%s\"\n", asmCopy);
-			return 1;
-		}
-      
-      // Compare student's translation to reference translation and score it:
-      uint32_t currScore = scoreResult(results, studentParse, asmCopy);
-      
-      // Update score information:
-      totalScore += currScore;
-      scores[numInstructions] = currScore;
-      numInstructions++;
-      
-      // Clean up dynamic allocations that should have occurred on this test:
-      free(asmCopy);
-      clearResult(studentParse);
-      free(studentParse);
-   }
-
-   // Log score results:
-   fprintf(results, "Scores:\n");
-   for (uint32_t idx = 0; idx < nTests; idx++) {
-		fprintf(results, "  Test %2"PRIu32":%5"PRIu32"/%"PRIu32"\n", 
-		                           idx + 1, scores[idx], PTS_PER_TEST);
-	}
-	fprintf(results, "\n");
-   fprintf(results, "Total score:  %"PRIu32"/%"PRIu32"\n", 
-                                     totalScore, nTests * PTS_PER_TEST);
+   printf("%s\n", inFile);
+   FILE *in = fopen(inFile, "r");
+   FILE* nocIn = removeComments(in);
+   fclose(in);
    
-   // Clean up last allocation:
-   free(scores);
-   
-   // Close input/output files:
-   fclose(src);
-   fclose(results);
-   
+   parseInstructions(nocIn);  
+   fclose(nocIn); 
    return 0;
+}
+
+
+FILE* removeComments(FILE* f)
+{
+   char* buf = calloc(555, sizeof(char));
+   FILE* out = fopen("nocomments.txt", "rw");
+   printf("Removing comments\n");
+   
+   while(fgets(buf, 555, f))
+   {
+      bool writing = true;
+      for(int i = 0; i < 555 && buf[i] != '\0'; i++)
+      {
+         if( buf[i] == '#' )
+         {
+            writing = false;
+            fputc( '\n', out);
+         }
+         else if (buf[i] == EOF)
+         {
+            fputc( EOF, out);
+            break;
+         }
+         if( writing )
+         {
+            fputc( buf[i], out);
+         }
+      }
+      free(buf);
+      buf = calloc(555, sizeof(char));
+   }
+   return out;
+}
+
+void parseInstructions(FILE* f)
+{
+   FILE* out = fopen("myAns.o", "w");
+   rewind(f);
+   //FILE fp = fopen("nocomments.txt", "r");
+   char* buf = calloc(555, sizeof(char));
+   //FILE* out = fopen("nocomments.txt", "w");
+   bool parsing = false; 
+   while(fgets(buf, 555, f))
+   { 
+      char* temp = calloc(100, sizeof(char));
+      sscanf(buf, "%s", temp);
+      if(strncmp(".text", temp, 6) == 0)
+      {
+         parsing = true;
+         continue;
+      }
+      if(parsing)
+      {
+         if(isInstruction(temp))
+         {
+            ParseResult* res = parseASM(buf);
+            printRes(out, res);
+            //printf("%s", buf);
+         }
+      }
+      free(buf);
+      buf = calloc(555, sizeof(char));
+   }
+   printf("%s\n", buf);
+   fclose(out);
+}
+
+void printRes(FILE* out, ParseResult* pPR)
+{
+   fprintf(out, "%s%s%s%s%s%s\n", pPR->Opcode, pPR->RS, pPR->RT, pPR->RD, "00000", pPR->Funct);
+/*      printf( "%s\n", pPR->ASMInstruction);
+      printf( "   %s   %s\n", pPR->Opcode, pPR->Mnemonic);
+      printf( "   %2"PRIu8"   %s", pPR->rd, pPR->rdName);
+      if ( pPR->RD != NULL ) {
+			printf( "   %s", pPR->RD);
+		}
+		printf( "\n");
+      printf( "   %2"PRIu8"   %s", pPR->rs, pPR->rsName);
+      if ( pPR->RS != NULL ) {
+			printf( "   %s", pPR->RS);
+		}
+		printf( "\n");
+      printf( "   %2"PRIu8"   %s", pPR->rt, pPR->rtName);
+      if ( pPR->RT != NULL ) {
+			printf( "   %s", pPR->RT);
+		}
+		printf( "\n");
+      printf( "   %s\n", pPR->Funct);
+      printf( "   %"PRId16"\n", pPR->Imm);
+      if ( pPR->IMM != NULL ) {
+			printf( "   %s", pPR->IMM);
+		}
+		printf( "\n");
+		printf( "\n");*/
 }
