@@ -6,39 +6,41 @@
 #include "ASMParser.h"
 #include "ParseResult.h"
 
-FILE* removeComments(FILE* f);
-void parseInstructions(FILE* f);
-void printRes(FILE* out, ParseResult* res);
+void removeComments(FILE* f);
+void parseInstructions(FILE* f, FILE* out);
 
 int main(int argc, char** argv)
 {
-   char* inFile, outFile;
+   char* inFile;
+   char* outFile;
 
-   if ( argc >= 3 )
+   if ( argc > 2 )
    {
       inFile = argv[1];
-      //outFile = argv[2];
+      outFile = argv[2];
    }
    else
    {
+      printf("invocation: assemble <infile> <outfile> [-symbols]\n");
       return 1;
    }
 
    printf("%s\n", inFile);
    FILE *in = fopen(inFile, "r");
-   FILE* nocIn = removeComments(in);
+   removeComments(in);
+   FILE* clean = fopen("cleaned.asm", "r");
    fclose(in);
-   
-   parseInstructions(nocIn);  
-   fclose(nocIn); 
+   FILE *out = fopen(outFile, "w");
+   parseInstructions(clean, out);  
+   fclose(clean); 
    return 0;
 }
 
 
-FILE* removeComments(FILE* f)
+void removeComments(FILE* f)
 {
-   char* buf = calloc(555, sizeof(char));
-   FILE* out = fopen("nocomments.txt", "rw");
+   char buf[555];
+   FILE* out = fopen("cleaned.asm", "w");
    printf("Removing comments\n");
    
    while(fgets(buf, 555, f))
@@ -60,19 +62,17 @@ FILE* removeComments(FILE* f)
          {
             fputc( buf[i], out);
          }
+
       }
-      free(buf);
-      buf = calloc(555, sizeof(char));
    }
-   return out;
+   fclose(out);
 }
 
-void parseInstructions(FILE* f)
+void parseInstructions(FILE* f, FILE* out)
 {
-   FILE* out = fopen("myAns.o", "w");
    rewind(f);
    //FILE fp = fopen("nocomments.txt", "r");
-   char* buf = calloc(555, sizeof(char));
+   char buf[555];
    //FILE* out = fopen("nocomments.txt", "w");
    bool parsing = false; 
    while(fgets(buf, 555, f))
@@ -82,6 +82,7 @@ void parseInstructions(FILE* f)
       if(strncmp(".text", temp, 6) == 0)
       {
          parsing = true;
+         free(temp);
          continue;
       }
       if(parsing)
@@ -89,42 +90,17 @@ void parseInstructions(FILE* f)
          if(isInstruction(temp))
          {
             ParseResult* res = parseASM(buf);
-            printRes(out, res);
+            //Output the machine instruction
+            fprintf(out, "%s\n", res->Machine);
             //printf("%s", buf);
+            clearResult(res);
+            free(res);
          }
       }
-      free(buf);
-      buf = calloc(555, sizeof(char));
+      free(temp);
    }
    printf("%s\n", buf);
+   fprintf(out, "\n");
    fclose(out);
 }
 
-void printRes(FILE* out, ParseResult* pPR)
-{
-   fprintf(out, "%s%s%s%s%s%s\n", pPR->Opcode, pPR->RS, pPR->RT, pPR->RD, "00000", pPR->Funct);
-/*      printf( "%s\n", pPR->ASMInstruction);
-      printf( "   %s   %s\n", pPR->Opcode, pPR->Mnemonic);
-      printf( "   %2"PRIu8"   %s", pPR->rd, pPR->rdName);
-      if ( pPR->RD != NULL ) {
-			printf( "   %s", pPR->RD);
-		}
-		printf( "\n");
-      printf( "   %2"PRIu8"   %s", pPR->rs, pPR->rsName);
-      if ( pPR->RS != NULL ) {
-			printf( "   %s", pPR->RS);
-		}
-		printf( "\n");
-      printf( "   %2"PRIu8"   %s", pPR->rt, pPR->rtName);
-      if ( pPR->RT != NULL ) {
-			printf( "   %s", pPR->RT);
-		}
-		printf( "\n");
-      printf( "   %s\n", pPR->Funct);
-      printf( "   %"PRId16"\n", pPR->Imm);
-      if ( pPR->IMM != NULL ) {
-			printf( "   %s", pPR->IMM);
-		}
-		printf( "\n");
-		printf( "\n");*/
-}

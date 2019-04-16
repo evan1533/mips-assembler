@@ -24,6 +24,7 @@ void clearResult(ParseResult* const pPR)
       free(pPR->rdName);
 	   free(pPR->RD);
 		free(pPR->Funct);
+      free(pPR->Shamt);
    }
    else
    {
@@ -37,6 +38,7 @@ void clearResult(ParseResult* const pPR)
    free(pPR->RS);
 	free(pPR->rsName);
 	free(pPR->Opcode);
+   free(pPR->Machine);
 
    pPR->ASMInstruction = NULL;
    pPR->Mnemonic = NULL;
@@ -47,8 +49,10 @@ void clearResult(ParseResult* const pPR)
    pPR->rd = 255;
    pPR->rs = 255;
    pPR->rt = 255;
+   pPR->shamt = 255;
    pPR->Opcode = NULL;
    pPR->Funct = NULL;
+   pPR->Shamt = NULL;
    pPR->RD = NULL;
    pPR->RS = NULL;
    pPR->RT = NULL;

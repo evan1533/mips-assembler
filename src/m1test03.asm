@@ -1,11 +1,11 @@
-
-
-
-
-
-
-
-
+# Spring 2019 Assembler Milestone 1
+# m1_03.asm
+#
+# Test R-format:  add, nor
+# Test I-format:  addi, slti
+# Test special:   syscall
+# Boundary checks for values of immediate field
+# Maximum score:  12.0
 
 .text
 main:

@@ -4,13 +4,16 @@ CC = gcc
 # compiler flags:
 #  -g    adds debugging information to the executable file
 #  -Wall turns on most, but not all, compiler warnings
-CFLAGS = -ggdb3 -Wall -std=c99
+CFLAGS = -ggdb3 -Wall -std=c11
+
+CFILES = driver.c ASMParser.c ParseResult.c
+HFILES = ASMParser.h ParseResult.h
 
 # the build target executable:
-TARGET = driver
+TARGET = assemble
 
 all: $(TARGET)
-	$(CC) $(CFLAGS) -o $(TARGET) *.c *.h *.o
+	$(CC) $(CFLAGS) -o $(TARGET) $(CFILES) $(HFILES)
 
 clean:
 	$(RM) $(TARGET)

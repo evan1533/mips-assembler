@@ -34,17 +34,21 @@ struct _ParseResult {
    uint8_t  rd;             // the three register fields, as small unsigned integers;
    uint8_t  rs;             //   255 if not relevant for the assembly instruction
    uint8_t  rt;
+   uint8_t shamt;
 
    // The computed machine code portion
    //   These are malloc'd zero-terminated C-strings
    char* Opcode;            // the opcode field bits
    char* Funct;             // the funct field bits
                             //   NULL if not relevant for the assembly instruction
+   char* Shamt;
+
    char* RD;                // the bit representations of the register numbers; 
    char* RS;                //   NULL if not relevant for the assembly instruction
    char* RT;
    char* IMM;               // 2's complement bit representation of the immediate;
                             //   NULL if not relevant for the assembly instruction
+   char* Machine;
 };
 
 typedef struct _ParseResult ParseResult;

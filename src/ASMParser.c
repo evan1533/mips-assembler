@@ -3,7 +3,6 @@
 #include <stdlib.h>    // and you might need additional ones, depending on
 #include <stdio.h>     // your approach to the problem.
 #include <assert.h>
-#include <stdbool.h>
 
 #include "ASMParser.h"
 
@@ -34,12 +33,12 @@ static char* toBinary(int num, int size);
  * correctly initialized to correspond to the target of pASM.
  */	
 ParseResult* parseASM(const char* const pASM) {
-   char* mnem = calloc(5, sizeof(char));
+   char* mnem = calloc(8, sizeof(char));
 	char* temp = calloc(50, sizeof(char));
 	strcpy(temp, pASM);
 	sscanf(temp,"%s", mnem);
 	char* opcode = findOpcode(mnem);
-
+   
    free(mnem);
    free(temp);
 
@@ -58,53 +57,82 @@ ParseResult* parseASM(const char* const pASM) {
 static ParseResult* parseRType(const char* const pASM)
 {
 	ParseResult* res = malloc(sizeof(ParseResult));
-	
 	res->ASMInstruction = calloc(50, sizeof(char));
 	strcpy(res->ASMInstruction, pASM);
-	char* mnem = calloc(5,sizeof(char));
+	char* mnem = calloc(8,sizeof(char));
 	char* arg1 = calloc(10,sizeof(char));
 	char* arg2 = calloc(10,sizeof(char));
 	char* arg3 = calloc(10,sizeof(char));
 
-	res->Mnemonic = calloc(5, sizeof(char));
-	res->rdName = calloc(4, sizeof(char*));
-	res->rsName = calloc(4, sizeof(char*));
-	res->rtName = calloc(4, sizeof(char*));
+	res->Mnemonic = calloc(8, sizeof(char));
+	res->rdName = calloc(4, sizeof(char));
+	res->rsName = calloc(4, sizeof(char));
+	res->rtName = calloc(4, sizeof(char));
 	res->Imm = 0;
 	res->rd = 255;
 	res->rs = 255;
 	res->rt = 255;
-	res->Opcode = calloc(7, sizeof(char*));
-	res->Funct = calloc(7, sizeof(char*));
-	res->RD = calloc(6, sizeof(char*));
-	res->RS = calloc(6, sizeof(char*));
-	res->RT = calloc(6, sizeof(char*));
+   res->shamt = 255;
+	res->Opcode = calloc(7, sizeof(char));
+	res->Funct = calloc(7, sizeof(char));
+   res->Shamt = calloc(6, sizeof(char));
+	res->RD = calloc(6, sizeof(char));
+	res->RS = calloc(6, sizeof(char));
+	res->RT = calloc(6, sizeof(char));
 	res->IMM = NULL;
+   res->Machine = calloc(33, sizeof(char));
 	
-	sscanf(pASM,"%3s %3s%*c %3s%*c %3s", mnem, arg1, arg2, arg3);
-
-   strcpy(res->Mnemonic, mnem);
-	strcpy(res->Opcode, "000000");
-	strcpy(res->Funct, findFunct(mnem));
-	strcpy(res->rdName, arg1);
-	strcpy(res->rsName, arg2);
-	strcpy(res->rtName, arg3);
-	res->rd = findRegister(arg1);
-	res->rs = findRegister(arg2);
-	res->rt = findRegister(arg3);
+	sscanf(pASM,"%s %3s%*c %3s%*c %3s", mnem, arg1, arg2, arg3);
+   if( strncmp(mnem, "syscall", 7) == 0)
+   {
+      strcpy(res->Mnemonic, mnem);
+      strcpy(res->Opcode, "000000");
+      strcpy(res->Funct, findFunct(mnem));
+      strcpy(res->Shamt, "00000");
+      strcpy(res->RS, "00000");
+      strcpy(res->RT, "00000");
+      strcpy(res->RD, "00000");
+   }
+   else
+   {
+      strcpy(res->Mnemonic, mnem);
+      strcpy(res->Opcode, "000000");
+      strcpy(res->Funct, findFunct(mnem));
+      strcpy(res->Shamt, "00000");
+      strcpy(res->rdName, arg1);
+      strcpy(res->rsName, arg2);
+      strcpy(res->rtName, arg3);
+      res->rd = findRegister(arg1);
+      res->rs = findRegister(arg2);
+      res->rt = findRegister(arg3);
+   
 	
-	char* rdBin = toBinary(res->rd, 5);
-   strcpy(res->RD, rdBin);
-	free(rdBin);
+      char* rdBin = toBinary(res->rd, 5);
+      strcpy(res->RD, rdBin);
+      free(rdBin);
 
-	char* rsBin = toBinary(res->rs, 5);
-	strcpy(res->RS, rsBin);
-	free(rsBin);
+      char* rsBin = toBinary(res->rs, 5);
+      strcpy(res->RS, rsBin);
+      free(rsBin);
 
-	char* rtBin = toBinary(res->rt, 5);
-	strcpy(res->RT, rtBin);
-	free(rtBin);
+      char* rtBin = toBinary(res->rt, 5);
+      strcpy(res->RT, rtBin);
+      free(rtBin);
 
+   }
+
+   //Build the machine code instruction
+   char* machine = calloc(33, sizeof(char));
+   strncat(machine, res->Opcode, 6);
+   strncat(machine, res->RS, 5); 
+   strncat(machine, res->RT, 5);
+   strncat(machine, res->RD, 5); 
+   strncat(machine, res->Shamt, 5);
+   strncat(machine, res->Funct, 6);
+   strncpy(res->Machine, machine, 32);
+   printf("%s\n", machine);
+
+   free(machine);
 	free(arg1);
 	free(arg2);
 	free(arg3);
@@ -133,12 +161,15 @@ static ParseResult* parseIType(const char* const pASM)
 	res->rd = 255;
 	res->rs = 255;
 	res->rt = 255;
+   res->shamt = 255;
 	res->Opcode = calloc(7, sizeof(char));
 	res->Funct = NULL;
+   res->Shamt = NULL;
 	res->RD = NULL;
 	res->RS = NULL;
 	res->RT = calloc(6, sizeof(char));
 	res->IMM = calloc(17, sizeof(char));
+   res->Machine = calloc(33, sizeof(char));
 
 	strcpy(res->Mnemonic, mnem);
 	strcpy(res->Opcode, findOpcode(mnem));
@@ -148,31 +179,8 @@ static ParseResult* parseIType(const char* const pASM)
 	strcpy(res->RT, rtBin);
 	free(rtBin);
 
-	if(strcmp(mnem, "addi") == 0 || strcmp(mnem, "andi") == 0)
-	{
-	   char* arg2 = calloc(5,sizeof(char));
-      char* temp = calloc(55, sizeof(char));
-      strcpy(temp, pASM);
-		sscanf(temp, "%*4s %*4s %3s%*1c %"SCNd16"", arg2, &imm);
 
-		res->rsName = calloc(5, sizeof(char));
-		strcpy(res->rsName, arg2);
-		res->rs = findRegister(res->rsName);
-
-		char* rsBin = toBinary(res->rs, 5);
-		res->RS = calloc(6, sizeof(char));
-		strcpy(res->RS, rsBin);
-		free(rsBin);
-
-		res->Imm = imm;
-		char* immBin = toBinary(imm, 16);
-		strcpy(res->IMM, immBin);
-		free(immBin);
-
-		free(arg2);
-      free(temp);
-	}
-	else if(strcmp(mnem, "lui") == 0)
+   if(strcmp(mnem, "lui") == 0)
 	{
 		sscanf(res->ASMInstruction, "%*3s %*4s %"SCNd16"", &imm);
 		
@@ -209,7 +217,42 @@ static ParseResult* parseIType(const char* const pASM)
 		free(arg2);
       free(temp);
 	}
+	//if(strcmp(mnem, "addi") == 0 || strcmp(mnem, "andi") == 0)
+   else
+	{
+	   char* arg2 = calloc(5,sizeof(char));
+      char* temp = calloc(55, sizeof(char));
+      strcpy(temp, pASM);
+		sscanf(temp, "%*4s %*4s %3s%*1c %"SCNd16"", arg2, &imm);
 
+		res->rsName = calloc(5, sizeof(char));
+		strcpy(res->rsName, arg2);
+		res->rs = findRegister(res->rsName);
+
+		char* rsBin = toBinary(res->rs, 5);
+		res->RS = calloc(6, sizeof(char));
+		strcpy(res->RS, rsBin);
+		free(rsBin);
+
+		res->Imm = imm;
+		char* immBin = toBinary(imm, 16);
+		strcpy(res->IMM, immBin);
+		free(immBin);
+
+		free(arg2);
+      free(temp);
+	}
+
+   //Build the machine code instruction
+   char* machine = calloc(33, sizeof(char));
+   strncat(machine, res->Opcode, 6);
+   strncat(machine, res->RS, 5); 
+   strncat(machine, res->RT, 5);
+   strncat(machine, res->IMM, 16);
+   strncpy(res->Machine, machine, 32);
+   printf("%s\n", machine);
+
+   free(machine);
 	free(mnem);
 	free(arg1);
 
