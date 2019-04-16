@@ -74,7 +74,7 @@ Symbol* parseSymbols(FILE* f)
             makeDataRaw(cur);
             tail->next = cur;
             tail = cur;
-            //printf("%s", buf);
+            printf("%s", buf);
             //printSymbol(cur);
          }
       }
@@ -125,20 +125,79 @@ char* stripData(char* const buf)
 
 void makeDataRaw(Symbol* sym)
 {
-   char* raw = calloc(32, sizeof(char));
+   char* raw;// = calloc(32, sizeof(char));
    if (strncmp(".asciiz", sym->Type, 7) == 0)
    {
       char* temp = sym->data;
-      for(int i = 1; temp[i] != '\"'; i++)
+      int size = strlen(temp)-2;
+      int rows = (size*8)%32;
+      int rawlength = (rows*33)+1;
+      raw = calloc(rawlength, sizeof(char));
+      int endIndex = -1;
+      for(int i = 1; i < size; i++)
       {
-         char* binRes = toBinary((int)temp[i], 8);
-         printf("%c -> %s\n",temp[i], binRes);
+         char* binRes;
+         if( i == size || temp[i] == '\n' || temp[i] == '\"')
+         {
+            binRes = "00000000";
+         }
+         else
+         {
+            binRes = toBinary((int)temp[i], 8);
+         }
+
+         strcat(raw, binRes);
+         //printf("%c -> %s\n",temp[i], binRes);
+         if(i%4==0)
+         {
+            strcat(raw, "\n");
+         }
+         endIndex = i;
+      }
+      //Pad the remaining data 
+      for(int i = endIndex; i % 4 != 0; i++)
+      {
+         if(i%4==3)
+         {
+            strcat(raw, "00000000\n");
+         }
+         else
+         {
+            strcat(raw, "00000000");
+         }
       }
    }
+   else if (strncmp(".word", sym->Type, 5) == 0)
+   {
+      char* token;
+      int* values = calloc(50, sizeof(int));
+      char* temp = sym->data;
+      raw = calloc(33, sizeof(char));
+      token = strtok(temp, ", ");
+      if(token != NULL)
+      {  
+         printf("TOK %s\n", token);
+         int count = 1;
+         while(token != NULL)
+         {
+            token = strtok(NULL, ", ");
+            printf("%s\n", token);
+         }
+      }
+      else
+      {
+         char* binRes = toBinary(atoi(temp), 32);
+         strncpy(raw, binRes, 32);
+         strcat(raw, "\n");
+      }
+   }
+   sym->raw = raw;
 }
+
+
 void printSymbol(Symbol* sym)
 {
-   printf("%s %s %s %s\n", sym->Label, sym->Type, sym->data, sym->raw);
+   printf("%s %s %s\n%s\n", sym->Label, sym->Type, sym->data, sym->raw);
 }
 
 static char* toBinary(int num, int size)
