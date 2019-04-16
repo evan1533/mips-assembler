@@ -6,6 +6,38 @@
 
 #include "ASMParser.h"
 
+static char* registerTable[NUM_REGISTERS] = {
+	"zero", "$at", "$v0", "$v1", "$a0", "$a1", "$a2", "$a3",
+	 "$t0", "$t1", "$t2", "$t3", "$t4", "$t5", "$t6", "$t7",
+	 "$s0", "$s1", "$s2", "$s3", "$s4", "$s5", "$s6", "$s7",
+	 "$t8", "$t9", "$k0", "$k1", "$gp", "$sp", "$fp", "$ra"};
+
+static MIPSInstruction mipsTable[NUM_INSTRUCTIONS] = {
+   {"add",    "000000", "100000"},
+   {"and",    "000000", "100100"},
+   { "sub",   "000000", "100010"}, 
+   {"addi",   "001000",   NULL  },
+   {"andi",   "001100",   NULL  },
+   {"lui",    "001111",   NULL  },
+   {"lw",     "100011",   NULL  },
+   {"sw",     "101011",   NULL  },
+   {"addu",   "000000", "100001"},
+   {"addiu",  "001001",   NULL  },
+   {"mul",    "000000", "011000"},
+   {"nop",    "000000", "000000"},
+   {"nor",    "000000", "100111"},
+   {"sll",    "000000", "000000"},
+   {"slt",    "000000", "101010"},
+   {"slti",   "001010",   NULL  },
+   {"sra",    "000000", "000011"},
+   {"srav",   "000000", "000111"},
+   {"beq",    "000100",   NULL  },
+   {"blez",   "000110",   NULL  },
+   {"bgtz",   "000111",   NULL  },
+   {"bne",    "000101",   NULL  },
+   {"j",      "000010",   NULL  },
+   {"syscall","000000", "001100"} };
+
 static uint8_t findRegister(char* rName);
 static char* findOpcode(char* inst);
 static char* findFunct(char* inst);
@@ -130,7 +162,6 @@ static ParseResult* parseRType(const char* const pASM)
    strncat(machine, res->Shamt, 5);
    strncat(machine, res->Funct, 6);
    strncpy(res->Machine, machine, 32);
-   printf("%s\n", machine);
 
    free(machine);
 	free(arg1);
@@ -250,7 +281,6 @@ static ParseResult* parseIType(const char* const pASM)
    strncat(machine, res->RT, 5);
    strncat(machine, res->IMM, 16);
    strncpy(res->Machine, machine, 32);
-   printf("%s\n", machine);
 
    free(machine);
 	free(mnem);

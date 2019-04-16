@@ -12,7 +12,7 @@ HFILES = ASMParser.h ParseResult.h
 # the build target executable:
 TARGET = assemble
 
-all: $(TARGET)
+assembler: $(CFILES)
 	$(CC) $(CFLAGS) -o $(TARGET) $(CFILES) $(HFILES)
 
 clean:
