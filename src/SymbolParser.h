@@ -3,13 +3,15 @@
 
 typedef enum {WORD, ASCIIZ} DataType;
 
-typedef struct {
+struct _Symbol {
    char* Label;
    char* Type;
    char* data;
    char* raw;
-   Symbol* next;
-} Symbol;
+   struct _Symbol* next;
+};
+
+typedef struct _Symbol Symbol;
 
 
 void cleanSymbols(Symbol* sym);
