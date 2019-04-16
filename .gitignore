@@ -1,1 +1,7 @@
 c03Grader.tar
+testing/*.txt
+testing/*.o
+testing/*.asm
+testing/assemble
+testing/build/*
+testing/compare
