@@ -47,7 +47,7 @@ int main(int argc, char** argv)
       return 1;
    }
 
-   printf("%s\n", inFile);
+   //printf("%s\n", inFile);
    FILE *in = fopen(inFile, "r");
    removeComments(in);
    FILE* clean = fopen("cleaned.asm", "r");
@@ -121,7 +121,7 @@ void parseInstructions(FILE* f, FILE* out)
       }
       free(temp);
    }
-   printf("%s\n", buf);
+   //printf("%s\n", buf);
    fprintf(out, "\n");
    fclose(out);
 }
