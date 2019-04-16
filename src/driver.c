@@ -25,10 +25,11 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include "SymbolParser.h"
 #include "ASMParser.h"
 #include "ParseResult.h"
+#include "ASMCleaner.h"
 
-void removeComments(FILE* f);
 void parseInstructions(FILE* f, FILE* out);
 
 int main(int argc, char** argv)
@@ -52,43 +53,15 @@ int main(int argc, char** argv)
    removeComments(in);
    FILE* clean = fopen("cleaned.asm", "r");
    fclose(in);
+
    FILE *out = fopen(outFile, "w");
+   Symbol* res = parseSymbols(clean);
    parseInstructions(clean, out);  
    fclose(clean); 
    return 0;
 }
 
 
-void removeComments(FILE* f)
-{
-   char buf[555];
-   FILE* out = fopen("cleaned.asm", "w");
-   printf("Removing comments\n");
-   
-   while(fgets(buf, 555, f))
-   {
-      bool writing = true;
-      for(int i = 0; i < 555 && buf[i] != '\0'; i++)
-      {
-         if( buf[i] == '#' )
-         {
-            writing = false;
-            fputc( '\n', out);
-         }
-         else if (buf[i] == EOF)
-         {
-            fputc( EOF, out);
-            break;
-         }
-         if( writing )
-         {
-            fputc( buf[i], out);
-         }
-
-      }
-   }
-   fclose(out);
-}
 
 void parseInstructions(FILE* f, FILE* out)
 {

@@ -6,7 +6,7 @@ CC = gcc
 #  -Wall turns on most, but not all, compiler warnings
 CFLAGS = -ggdb3 -Wall -std=c11
 
-CFILES = driver.c ASMParser.c ParseResult.c
+CFILES = driver.c ASMParser.c ParseResult.c ASMCleaner.c SymbolParser.c 
 HFILES = ASMParser.h ParseResult.h
 
 # the build target executable:
