@@ -7,7 +7,8 @@ typedef enum {WORD, ASCIIZ} DataType;
 struct _Symbol {
    char* Label;
    char* Type;
-   char* address;
+   char* Address;
+   int address;
    int size;
    char* data;
    char* raw;
@@ -19,5 +20,6 @@ typedef struct _Symbol Symbol;
 
 void cleanSymbols(Symbol* sym);
 Symbol* parseSymbols(FILE* f);
+void printSymbol(Symbol* sym);
 
 #endif

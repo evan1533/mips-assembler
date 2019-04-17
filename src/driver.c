@@ -32,23 +32,40 @@
 
 void parseInstructions(FILE* f, FILE* out, Symbol* sym);
 void writeSymbols(FILE* out, Symbol* sym);
+void createSymbolTable(FILE* out, Symbol* sym);
 
 int main(int argc, char** argv)
 {
    char* inFile;
    char* outFile;
+   char* flag;
+   bool genTable = false;
 
    if ( argc > 2 )
    {
       inFile = argv[1];
       outFile = argv[2];
+      if(argc == 4)
+      {
+         flag = argv[3];
+         
+         if(strncmp(flag, "-symbols", 8) == 0)
+         {
+            genTable = true;
+         }
+         else
+         {
+            printf("Unrecognized option %s\n", flag);
+            return 1;
+         }
+      }
    }
    else
    {
       printf("invocation: assemble <infile> <outfile> [-symbols]\n");
       return 1;
    }
-
+   
    //printf("%s\n", inFile);
    FILE *in = fopen(inFile, "r");
    printf("Removing comments...\n");
@@ -59,10 +76,27 @@ int main(int argc, char** argv)
    FILE *out = fopen(outFile, "w");
    printf("Parsing symbols...\n");
    Symbol* res = parseSymbols(clean);
-   printf("Parsing instructions...\n");
-   parseInstructions(clean, out, res);
-   printf("Writing symbols...\n");  
-   writeSymbols(out, res); 
+
+   if(genTable)
+   {
+      createSymbolTable(out, res);
+   }
+   else
+   {
+      //replaceSymobls(clean);
+      //printf("Parsing instructions...\n");
+      //parseInstructions(clean, out, res);
+      printf("Writing symbols...\n");  
+      //writeSymbols(out, res); 
+      Symbol* temp = res->next;
+      while(temp != NULL)
+      {
+         printSymbol(temp);
+         printf("\n");
+         temp = temp->next;
+      }
+   }
+
    fclose(clean); 
    printf("Freeing symbol list...\n");
    cleanSymbols(res);
@@ -82,7 +116,7 @@ void parseInstructions(FILE* f, FILE* out, Symbol* sym)
    bool parsing = false; 
    while(fgets(buf, 555, f))
    {
-      //printf("INS: %s\n", buf); 
+      printf("INS: %s\n", buf); 
       char* temp = calloc(100, sizeof(char));
       sscanf(buf, "%s", temp);
       if(strncmp(".text", temp, 6) == 0)
@@ -109,12 +143,24 @@ void parseInstructions(FILE* f, FILE* out, Symbol* sym)
    fprintf(out, "\n");
 }
 
+void createSymbolTable(FILE* out, Symbol* sym)
+{
+   Symbol* temp;
+   temp = sym->next;
+   while(temp!=NULL)
+   {
+      fprintf(out, "0x%08X\t%s\n", temp->address, temp->Label);
+      temp = temp->next;
+   }
+}
+
 void writeSymbols(FILE* out, Symbol* sym)
 {
-   sym = sym->next;
-   while(sym!=NULL)
+   Symbol* temp;
+   temp = sym->next;
+   while(temp!=NULL)
    {
-      fprintf(out, "%s", sym->raw);
-      sym = sym->next;
+      fprintf(out, "%s", temp->raw);
+      temp = temp->next;
    }
 }

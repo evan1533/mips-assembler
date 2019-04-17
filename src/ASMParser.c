@@ -205,10 +205,10 @@ static ParseResult* parseIType(const char* const pASM, Symbol* sym)
 
 	res->ASMInstruction = calloc(50, sizeof(char));
    strcpy(res->ASMInstruction, pASM);
-	char* mnem = calloc(5,sizeof(char));
+	char* mnem = calloc(6,sizeof(char));
 	char* arg1 = calloc(10,sizeof(char));
 	int16_t imm = 0;
-	sscanf(pASM, "%s %3s", mnem, arg1);
+	sscanf(pASM, "%s %s", mnem, arg1);
 
 	//Set all fields to default unused value, then fill in the fields that we use as
 	//we go along, thus in the end only the unused fields will still have the default value
@@ -235,7 +235,7 @@ static ParseResult* parseIType(const char* const pASM, Symbol* sym)
 	strcpy(res->rtName, arg1);
 	res->rt = findRegister(arg1);
 	char* rtBin = toBinary(res->rt, 5);
-	strcpy(res->RT, rtBin);
+	strncpy(res->RT, rtBin, 5);
 	free(rtBin);
 
 
@@ -355,11 +355,11 @@ static char* getLabelAddress(char* label, Symbol* sym)
    sym = sym->next;
    while( sym != NULL )
    {
-      printf("addr: %s\n", sym->address);
+      printf("addr: %s\n", sym->Address);
       printf("%s %s\n", sym->Label, label);
       if( strcmp(sym->Label, label) == 0)
       {
-         return sym->address;
+         return sym->Address;
       }
       sym = sym->next;
    }
