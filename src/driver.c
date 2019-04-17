@@ -56,8 +56,10 @@ int main(int argc, char** argv)
 
    FILE *out = fopen(outFile, "w");
    Symbol* res = parseSymbols(clean);
+   
    parseInstructions(clean, out);  
    fclose(clean); 
+   cleanSymbols(res);
    return 0;
 }
 

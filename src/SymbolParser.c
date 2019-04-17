@@ -28,15 +28,18 @@ void cleanSymbols(Symbol* sym)
 Symbol* initSymbol(char* pLabel, char* pType, char* pData)
 {
    Symbol* res = calloc(1, sizeof(Symbol));
-   res->Label = calloc(50, sizeof(char));
+   /*res->Label = calloc(50, sizeof(char));
    res->Type = calloc(9, sizeof(char));
-   res->data = calloc(500, sizeof(char));
+   res->data = calloc(500, sizeof(char));*/
+   res->Label = pLabel;
+   res->Type = pType;
+   res->data = pData;
    res->raw = NULL;
    res->next = NULL;
 
-   strncpy(res->Label, pLabel, 50);
-   strncpy(res->Type, pType, 9);
-   strncpy(res->data, pData, 500);
+   //strncpy(res->Label, pLabel, 50);
+   //strncpy(res->Type, pType, 9);
+   //strncpy(res->data, pData, 500);
 
    return res;
 }
@@ -68,7 +71,6 @@ Symbol* parseSymbols(FILE* f)
             char* data;
             
             sscanf(buf, "%s %s", label, type);
-                
             data = stripData(buf);
             cur = initSymbol(label, type, data);
             makeDataRaw(cur);
@@ -131,6 +133,7 @@ void makeDataRaw(Symbol* sym)
       char* temp = sym->data;
       int size = strlen(temp)-2;
       int rows = (size*8)%32;
+      rows = (rows == 0) ? 1 : rows;
       int rawlength = (rows*33)+1;
       raw = calloc(rawlength, sizeof(char));
       int endIndex = -1;
@@ -140,13 +143,15 @@ void makeDataRaw(Symbol* sym)
          if( i == size || temp[i] == '\n' || temp[i] == '\"')
          {
             binRes = "00000000";
+            strcat(raw, binRes);
          }
          else
          {
             binRes = toBinary((int)temp[i], 8);
+            strcat(raw, binRes);
+            free(binRes);
          }
 
-         strcat(raw, binRes);
          //printf("%c -> %s\n",temp[i], binRes);
          if(i%4==0)
          {
@@ -171,25 +176,29 @@ void makeDataRaw(Symbol* sym)
    {
       char* token;
       int* values = calloc(50, sizeof(int));
-      char* temp = sym->data;
-      raw = calloc(33, sizeof(char));
+      char* temp = calloc(500, sizeof(char));
+      strncpy(temp, sym->data, 500);
+      
       token = strtok(temp, ", ");
-      if(token != NULL)
+      printf("TOK %s\n", token);
+      int count = 0;
+      while(token != NULL)
       {  
-         printf("TOK %s\n", token);
-         int count = 1;
-         while(token != NULL)
-         {
-            token = strtok(NULL, ", ");
-            printf("%s\n", token);
-         }
+         values[count] = atoi(token);
+         token = strtok(NULL, ", ");
+         count++;
       }
-      else
+      
+      raw = calloc(count*34, sizeof(char));
+      for(int i = 0; i < count; i++)
       {
-         char* binRes = toBinary(atoi(temp), 32);
-         strncpy(raw, binRes, 32);
+         char* binRes = toBinary(values[i], 32);
+         strcat(raw, binRes);
          strcat(raw, "\n");
+         free(binRes);
       }
+      free(temp);
+      free(values);
    }
    sym->raw = raw;
 }

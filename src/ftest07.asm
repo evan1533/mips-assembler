@@ -17,6 +17,7 @@ val03:  .word    903923
 str04:  .asciiz  "end"
 str05:  .asciiz  "Pointers are fun!"
 val04:  .word    3137814
+
 #.text
 #main:
 #        la    $t0, val01
@@ -25,5 +26,5 @@ val04:  .word    3137814
 #
 #        lw    $s0, 0($t0)
 #        lw    $s1, 4($t1)
-
-#       sw    $s0, -40($t3)
+#        
+#        sw    $s0, -40($t3)
