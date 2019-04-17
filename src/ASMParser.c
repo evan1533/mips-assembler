@@ -71,7 +71,7 @@ static char* findFunct(char* inst);
 static ParseResult* parseRType(const char* const pASM);
 static ParseResult* parseIType(const char* const pASM, Symbol* sym);
 static char* toBinary(int num, int size); 
-static int16_t getLabelData(char* label, Symbol* sym);
+static char* getLabelAddress(char* label, Symbol* sym);
 
 /** Breaks up given the MIPS32 assembly instruction and creates a proper
  * ParseResult object storing information about that instruction.
@@ -294,13 +294,16 @@ static ParseResult* parseIType(const char* const pASM, Symbol* sym)
 		free(rsBin);
 
       printf("Getting label data...\n");
-		imm = getLabelData(label, sym);
-      printf("Done!\n");
-		res->Imm = imm;
-		char* immBin = toBinary(imm, 16);
-		strcpy(res->IMM, immBin);
-		free(immBin);
+		//imm = getLabelData(label, sym);
+      //printf("Done!\n");
+		//res->Imm = imm;
+		//char* immBin = toBinary(imm, 16);
+		//strcpy(res->IMM, immBin);
+		//free(immBin);
 
+      char* tempAddr = getLabelAddress(label, sym);
+      printf("Done! %s\n", tempAddr);
+      strcpy(res->IMM, tempAddr);
 		free(label);
       free(temp);
    }
@@ -347,18 +350,20 @@ static ParseResult* parseIType(const char* const pASM, Symbol* sym)
 	return res;
 }
 
-static int16_t getLabelData(char* label, Symbol* sym)
+static char* getLabelAddress(char* label, Symbol* sym)
 {
    sym = sym->next;
    while( sym != NULL )
    {
+      printf("addr: %s\n", sym->address);
+      printf("%s %s\n", sym->Label, label);
       if( strcmp(sym->Label, label) == 0)
       {
-         return sym->imm;
+         return sym->address;
       }
       sym = sym->next;
    }
-   return 0;
+   return NULL;
 }
 
 static char* toBinary(int num, int size)

@@ -8,7 +8,7 @@ struct _Symbol {
    char* Label;
    char* Type;
    char* data;
-   int16_t imm;
+   char* address;
    char* raw;
    struct _Symbol* next;
 };

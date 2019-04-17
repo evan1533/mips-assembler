@@ -5,6 +5,8 @@
 
 #include "SymbolParser.h"
 
+#define BASE_ADDRESS 0x0000200
+
 Symbol* initSymbol(char* pLabel, char* pType, char* pData);
 void printSymbol(Symbol* sym);
 char* stripData(char* const buf);
@@ -20,6 +22,7 @@ void cleanSymbols(Symbol* sym)
       free(sym->Type);
       free(sym->data);
       free(sym->raw);
+      free(sym->address);
       free(sym);
       sym = next;
    }
@@ -34,7 +37,7 @@ Symbol* initSymbol(char* pLabel, char* pType, char* pData)
    res->Label = pLabel;
    res->Type = pType;
    res->data = pData;
-   res->imm = 0;
+   res->address = NULL;
    res->raw = NULL;
    res->next = NULL;
 
@@ -79,6 +82,7 @@ Symbol* parseSymbols(FILE* f)
             
             sscanf(buf, "%s %s", label, type);
             data = stripData(buf);
+            label = strtok(label, ":");
             cur = initSymbol(label, type, data);
             makeDataRaw(cur);
             tail->next = cur;
@@ -93,9 +97,9 @@ Symbol* parseSymbols(FILE* f)
    Symbol* temp = head;
    while(temp!=NULL)
    {
-      printSymbol(temp);
+      //printSymbol(temp);
       temp = temp->next;
-      printf("\n");
+      //printf("\n");
    }
    //printf("%s\n", buf);
    //fprintf(out, "\n");
@@ -134,7 +138,11 @@ char* stripData(char* const buf)
 
 void makeDataRaw(Symbol* sym)
 {
+   static uint32_t addr = 0x2000;
    char* raw;// = calloc(32, sizeof(char));
+   
+   sym->address = toBinary(addr, 16);
+
    if (strncmp(".asciiz", sym->Type, 7) == 0)
    {
       char* temp = sym->data;
@@ -178,6 +186,7 @@ void makeDataRaw(Symbol* sym)
             strcat(raw, "00000000");
          }
       }
+      addr += rows*32;
    }
    else if (strncmp(".word", sym->Type, 5) == 0)
    {
@@ -188,7 +197,6 @@ void makeDataRaw(Symbol* sym)
       
       token = strtok(temp, ", ");
       printf("TOK %s\n", token);
-      sym->imm = atoi(token);
       int count = 0;
       while(token != NULL)
       {  
@@ -205,6 +213,7 @@ void makeDataRaw(Symbol* sym)
          strcat(raw, "\n");
          free(binRes);
       }
+      addr += count*32;
       free(temp);
       free(values);
    }
@@ -214,7 +223,7 @@ void makeDataRaw(Symbol* sym)
 
 void printSymbol(Symbol* sym)
 {
-   printf("%s %s %s\n%d\n%s\n", sym->Label, sym->Type, sym->data, sym->imm, sym->raw);
+   printf("%s %s %s\n%s\n%s\n", sym->Label, sym->Type, sym->address, sym->data, sym->raw);
 }
 
 static char* toBinary(int num, int size)
