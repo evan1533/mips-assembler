@@ -3,8 +3,6 @@
 #include "ParseResult.h"
 #include <stdbool.h>
 
-#define NUM_REGISTERS 32
-#define NUM_INSTRUCTIONS 24
 
 typedef struct _MIPSInstruction {
    char* mnemonic;

@@ -75,7 +75,8 @@ void parseInstructions(FILE* f, FILE* out)
    //FILE* out = fopen("nocomments.txt", "w");
    bool parsing = false; 
    while(fgets(buf, 555, f))
-   { 
+   {
+      printf("INS: %s\n", buf); 
       char* temp = calloc(100, sizeof(char));
       sscanf(buf, "%s", temp);
       if(strncmp(".text", temp, 6) == 0)

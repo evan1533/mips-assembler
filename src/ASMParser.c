@@ -28,6 +28,9 @@
 
 #include "ASMParser.h"
 
+#define NUM_REGISTERS 32
+#define NUM_INSTRUCTIONS 25
+
 static char* registerTable[NUM_REGISTERS] = {
 	"zero", "$at", "$v0", "$v1", "$a0", "$a1", "$a2", "$a3",
 	 "$t0", "$t1", "$t2", "$t3", "$t4", "$t5", "$t6", "$t7",
@@ -58,7 +61,8 @@ static MIPSInstruction mipsTable[NUM_INSTRUCTIONS] = {
    {"bgtz",   "000111",   NULL  },
    {"bne",    "000101",   NULL  },
    {"j",      "000010",   NULL  },
-   {"syscall","000000", "001100"} };
+   {"syscall","000000", "001100"},
+   {"addiu",  "001001",   NULL  } };
 
 static uint8_t findRegister(char* rName);
 static char* findOpcode(char* inst);
@@ -246,7 +250,7 @@ static ParseResult* parseIType(const char* const pASM)
 		res->RS = calloc(7, sizeof(char));
 		strcpy(res->RS, "00000");
 	}
-	else if(strcmp(mnem, "lw") == 0)
+	else if(strcmp(mnem, "lw") == 0 || strcmp(mnem, "sw") == 0)
 	{
 	   char* arg2 = calloc(5,sizeof(char));
       char* temp = calloc(55, sizeof(char));
@@ -276,7 +280,8 @@ static ParseResult* parseIType(const char* const pASM)
 	   char* arg2 = calloc(5,sizeof(char));
       char* temp = calloc(55, sizeof(char));
       strcpy(temp, pASM);
-		sscanf(temp, "%*4s %*4s %3s%*1c %"SCNd16"", arg2, &imm);
+      printf("%s\n", temp);
+		sscanf(temp, "%*s %*s %3s%*1c %"SCNd16"", arg2, &imm);
 
 		res->rsName = calloc(5, sizeof(char));
 		strcpy(res->rsName, arg2);
@@ -289,6 +294,7 @@ static ParseResult* parseIType(const char* const pASM)
 
 		res->Imm = imm;
 		char* immBin = toBinary(imm, 16);
+      printf("%d -> %s\n", imm, immBin);
 		strcpy(res->IMM, immBin);
 		free(immBin);
 

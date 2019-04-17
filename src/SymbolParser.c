@@ -61,6 +61,12 @@ Symbol* parseSymbols(FILE* f)
          free(temp);
          continue;
       }
+      else if(strncmp(".text", temp, 5) == 0)
+      {
+         parsing = false;
+         free(temp);
+         continue;
+      }
       if(parsing)
       {
          if(strlen(buf) > 4)
