@@ -83,13 +83,13 @@ Symbol* parseSymbols(FILE* f)
       free(temp);
    }
 
-   Symbol* temp = head;
+   /*Symbol* temp = head;
    while(temp!=NULL)
    {
       printSymbol(temp);
       temp = temp->next;
       printf("\n");
-   }
+   }*/
    //printf("%s\n", buf);
    //fprintf(out, "\n");
    //fclose(out);

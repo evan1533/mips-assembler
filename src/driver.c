@@ -31,6 +31,7 @@
 #include "ASMCleaner.h"
 
 void parseInstructions(FILE* f, FILE* out);
+void writeSymbols(FILE* out, Symbol* sym);
 
 int main(int argc, char** argv)
 {
@@ -56,10 +57,11 @@ int main(int argc, char** argv)
 
    FILE *out = fopen(outFile, "w");
    Symbol* res = parseSymbols(clean);
-   
    parseInstructions(clean, out);  
+   writeSymbols(out, res); 
    fclose(clean); 
    cleanSymbols(res);
+   fclose(out);
    return 0;
 }
 
@@ -98,6 +100,14 @@ void parseInstructions(FILE* f, FILE* out)
    }
    //printf("%s\n", buf);
    fprintf(out, "\n");
-   fclose(out);
 }
 
+void writeSymbols(FILE* out, Symbol* sym)
+{
+   sym = sym->next;
+   while(sym!=NULL)
+   {
+      fprintf(out, "%s", sym->raw);
+      sym = sym->next;
+   }
+}
