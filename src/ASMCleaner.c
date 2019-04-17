@@ -1,29 +1,41 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdbool.h>
+#include <ctype.h>
 
 void removeComments(FILE* f)
 {
    char buf[555];
    FILE* out = fopen("cleaned.asm", "w");
-   printf("Removing comments\n");
    
    while(fgets(buf, 555, f))
    {
       bool writing = true;
+      if(buf[0] == '\n')
+      {
+         continue;
+      }
+      bool blankLine = true;
       for(int i = 0; i < 555 && buf[i] != '\0'; i++)
       {
+         if(!isspace(buf[i]))
+         {
+            blankLine = false;
+         }
          if( buf[i] == '#' )
          {
             writing = false;
-            fputc( '\n', out);
+            if ( i != 0)
+            {
+               fputc( '\n', out);
+            }
          }
          else if (buf[i] == EOF)
          {
             fputc( EOF, out);
             break;
          }
-         if( writing )
+         if( writing && !blankLine )
          {
             fputc( buf[i], out);
          }

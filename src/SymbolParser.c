@@ -4,10 +4,11 @@
 #include <string.h>
 
 #include "SymbolParser.h"
-
+#include "ASMParser.h"
+ 
 #define BASE_ADDRESS 0x0000200
 
-Symbol* initSymbol(char* pLabel, char* pType, char* pData);
+Symbol* initSymbol(char* pLabel, char* pType, char* pData, char* pAddress);
 void printSymbol(Symbol* sym);
 char* stripData(char* const buf);
 void makeDataRaw(Symbol* sym);
@@ -18,6 +19,7 @@ void cleanSymbols(Symbol* sym)
    while(sym)
    {
       Symbol* next = sym->next;
+      sym->size = 0;
       free(sym->Label);
       free(sym->Type);
       free(sym->data);
@@ -28,7 +30,7 @@ void cleanSymbols(Symbol* sym)
    }
 }
 
-Symbol* initSymbol(char* pLabel, char* pType, char* pData)
+Symbol* initSymbol(char* pLabel, char* pType, char* pData, char* pAddress)
 {
    Symbol* res = calloc(1, sizeof(Symbol));
    /*res->Label = calloc(50, sizeof(char));
@@ -37,7 +39,8 @@ Symbol* initSymbol(char* pLabel, char* pType, char* pData)
    res->Label = pLabel;
    res->Type = pType;
    res->data = pData;
-   res->address = NULL;
+   res->address = pAddress;
+   res->size = 0;
    res->raw = NULL;
    res->next = NULL;
 
@@ -52,54 +55,95 @@ Symbol* parseSymbols(FILE* f)
 {
    Symbol* head = calloc(1, sizeof(Symbol));
    Symbol* tail = head;
+   head->size = 0;
+   head->Label = "HEAD";
+   static uint32_t textAddr = 0x0000;
+   static uint32_t dataAddr = 0x2000;
    rewind(f);
    char buf[555];
-   bool parsing = false; 
+   bool dataParsing = false; 
+   bool textParsing = false;
    while(fgets(buf, 555, f))
    { 
       char* temp = calloc(100, sizeof(char));
       sscanf(buf, "%s", temp);
       if(strncmp(".data", temp, 5) == 0)
       {
-         parsing = true;
+         printf("\tParsing data symbols...\n");
+         dataParsing = true;
+         textParsing = false;
          free(temp);
          continue;
       }
       else if(strncmp(".text", temp, 5) == 0)
       {
-         parsing = false;
+         printf("\tParsing text symbols...\n");
+         dataParsing = false;
+         textParsing = true;
          free(temp);
          continue;
       }
-      if(parsing)
+      if(dataParsing)
       {
-         if(strlen(buf) > 4)
+         if(strlen(buf) > 1)
          {
             Symbol* cur;
             char* label = calloc(50, sizeof(char));
             char* type = calloc(9, sizeof(char));
             char* data;
+            char* address = toBinary(dataAddr, 16);
             
             sscanf(buf, "%s %s", label, type);
             data = stripData(buf);
             label = strtok(label, ":");
-            cur = initSymbol(label, type, data);
+            cur = initSymbol(label, type, data, address);
             makeDataRaw(cur);
+            dataAddr += cur->size;
             tail->next = cur;
             tail = cur;
-            printf("%s", buf);
+            //printf("%s", buf);
             //printSymbol(cur);
          }
       }
+      if(textParsing)
+      {
+         if(strlen(buf) > 1)
+         {
+            Symbol* cur;
+            char* label;
+            char* type = calloc(9, sizeof(char));
+            strcpy(type, ".text");
+            printf("\tScanning label...\n");
+            sscanf(buf, "%s", label);
+
+            int bufLen = strlen(buf)-1;
+            if(bufLen > 0 && buf[bufLen-1] == ':')
+            {
+               char* address = toBinary(textAddr, 32);
+               label = calloc(50, sizeof(char));
+               label = strtok(label, ":");
+               cur = initSymbol(label, type, NULL, address);
+               tail->next = cur;
+               tail = cur;
+               printf("%s", buf);
+            }
+            else if (bufLen > 0)
+            {
+               printf("%X -> %s\n", textAddr, buf);
+               textAddr+=32;
+            }
+         }
+      }
+
       free(temp);
    }
 
    Symbol* temp = head;
    while(temp!=NULL)
    {
-      //printSymbol(temp);
+      printSymbol(temp);
       temp = temp->next;
-      //printf("\n");
+      printf("\n");
    }
    //printf("%s\n", buf);
    //fprintf(out, "\n");
@@ -138,11 +182,7 @@ char* stripData(char* const buf)
 
 void makeDataRaw(Symbol* sym)
 {
-   static uint32_t addr = 0x2000;
    char* raw;// = calloc(32, sizeof(char));
-   
-   sym->address = toBinary(addr, 16);
-
    if (strncmp(".asciiz", sym->Type, 7) == 0)
    {
       char* temp = sym->data;
@@ -186,7 +226,7 @@ void makeDataRaw(Symbol* sym)
             strcat(raw, "00000000");
          }
       }
-      addr += rows*32;
+      sym->size = rows*32;
    }
    else if (strncmp(".word", sym->Type, 5) == 0)
    {
@@ -196,7 +236,7 @@ void makeDataRaw(Symbol* sym)
       strncpy(temp, sym->data, 500);
       
       token = strtok(temp, ", ");
-      printf("TOK %s\n", token);
+      //printf("TOK %s\n", token);
       int count = 0;
       while(token != NULL)
       {  
@@ -213,7 +253,7 @@ void makeDataRaw(Symbol* sym)
          strcat(raw, "\n");
          free(binRes);
       }
-      addr += count*32;
+      sym->size = count*32;
       free(temp);
       free(values);
    }

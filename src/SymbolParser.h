@@ -7,8 +7,9 @@ typedef enum {WORD, ASCIIZ} DataType;
 struct _Symbol {
    char* Label;
    char* Type;
-   char* data;
    char* address;
+   int size;
+   char* data;
    char* raw;
    struct _Symbol* next;
 };

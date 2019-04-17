@@ -51,17 +51,23 @@ int main(int argc, char** argv)
 
    //printf("%s\n", inFile);
    FILE *in = fopen(inFile, "r");
+   printf("Removing comments...\n");
    removeComments(in);
    FILE* clean = fopen("cleaned.asm", "r");
    fclose(in);
 
    FILE *out = fopen(outFile, "w");
+   printf("Parsing symbols...\n");
    Symbol* res = parseSymbols(clean);
-   parseInstructions(clean, out, res);  
+   printf("Parsing instructions...\n");
+   parseInstructions(clean, out, res);
+   printf("Writing symbols...\n");  
    writeSymbols(out, res); 
    fclose(clean); 
+   printf("Freeing symbol list...\n");
    cleanSymbols(res);
    fclose(out);
+   printf("Done!\n");
    return 0;
 }
 
