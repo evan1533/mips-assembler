@@ -5,3 +5,4 @@ testing/*.asm
 testing/assemble
 testing/build/*
 testing/compare
+assemble
