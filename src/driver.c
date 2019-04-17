@@ -70,7 +70,7 @@ int main(int argc, char** argv)
    FILE *in = fopen(inFile, "r");
    printf("Removing comments...\n");
    removeComments(in);
-   FILE* clean = fopen("cleaned.asm", "r");
+   FILE* clean = fopen("cleaned.asm", "rw");
    fclose(in);
 
    FILE *out = fopen(outFile, "w");
@@ -83,7 +83,7 @@ int main(int argc, char** argv)
    }
    else
    {
-      //replaceSymobls(clean);
+      replaceSymbols(clean, res);
       //printf("Parsing instructions...\n");
       //parseInstructions(clean, out, res);
       printf("Writing symbols...\n");  

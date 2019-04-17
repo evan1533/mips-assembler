@@ -445,3 +445,12 @@ bool isInstruction(char* s)
 	}
 	return false;
 }
+
+bool isLabelInstruction(char* s)
+{
+	if(strcmp(s, "la") == 0)// || strcmp(s, "lw") == 0)
+	{
+		return true;
+	}
+	return false;
+}

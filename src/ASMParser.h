@@ -27,6 +27,7 @@ typedef struct _MIPSInstruction {
 ParseResult* parseASM(const char* const pASM, Symbol* sym);
 
 bool isInstruction(char* s);
+bool isLabelInstruction(char* s);
 
 
 

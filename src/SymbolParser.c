@@ -12,8 +12,8 @@ Symbol* initSymbol(char* pLabel, char* pType, char* pData, char* pAddress, int a
 char* stripData(char* const buf);
 void makeDataRaw(Symbol* sym);
 static char* toBinary(int num, int size);
-void parseDataSymbols(FILE* f, Symbol* tail);
-void parseTextSymbols(FILE* f, Symbol* tail);
+Symbol* parseDataSymbols(FILE* f, Symbol* tail);
+Symbol* parseTextSymbols(FILE* f, Symbol* tail);
 
 void cleanSymbols(Symbol* sym)
 {
@@ -61,12 +61,12 @@ Symbol* parseSymbols(FILE* f)
    head->Label = calloc(5, sizeof(char));
    strcpy(head->Label, "HEAD");
    rewind(f);
-
+   
    printf("\tParsing data symbols...\n");
-   parseDataSymbols(f, tail);
+   tail = parseDataSymbols(f, tail);
    
    printf("\tParsing text symbols...\n");
-   parseTextSymbols(f, tail);
+   tail = parseTextSymbols(f, tail);
 
    Symbol* temp = head;
    while(temp!=NULL)
@@ -82,7 +82,7 @@ Symbol* parseSymbols(FILE* f)
    return head;
 }
 
-void parseTextSymbols(FILE* f, Symbol* tail)
+Symbol* parseTextSymbols(FILE* f, Symbol* tail)
 {  
    static uint32_t textAddr = 0x0000;
    bool textParsing = false;
@@ -130,7 +130,7 @@ void parseTextSymbols(FILE* f, Symbol* tail)
             else if (bufLen > 0)
             {
                printf("\t%X -> %s\n", textAddr, buf);
-               textAddr+=32;
+               textAddr+=4;
                free(label);
                free(type);
             }
@@ -140,9 +140,10 @@ void parseTextSymbols(FILE* f, Symbol* tail)
       free(temp);
    }
 
+   return tail;
 }
 
-void parseDataSymbols(FILE* f, Symbol* tail)
+Symbol* parseDataSymbols(FILE* f, Symbol* tail)
 {
    static uint32_t dataAddr = 0x2000;
    bool dataParsing = false;
@@ -179,16 +180,21 @@ void parseDataSymbols(FILE* f, Symbol* tail)
             data = stripData(buf);
             label = strtok(label, ":");
             cur = initSymbol(label, type, data, address, dataAddr);
+            
             makeDataRaw(cur);
-            dataAddr += cur->size;
+            printf("%X %d %x\n", dataAddr, cur->size, cur->size*4);
+            dataAddr += (cur->size)*4;
+            
             tail->next = cur;
             tail = cur;
-            //printf("%s", buf);
+            printf("%s", buf);
             //printSymbol(cur);
          }
       } 
       free(temp);
    }
+
+   return tail;
 
 }
 
@@ -226,8 +232,8 @@ void makeDataRaw(Symbol* sym)
    {
       char* temp = sym->data;
       int size = strlen(temp)-2;
-      int rows = (size*8)%32;
-      rows = (rows == 0) ? 1 : rows;
+      int rows = ((size*8)/32)+1;
+      //rows = (rows == 0) ? 1 : rows;
       int rawlength = (rows*33)+1;
       raw = calloc(rawlength, sizeof(char));
       int endIndex = -1;
@@ -265,7 +271,7 @@ void makeDataRaw(Symbol* sym)
             strcat(raw, "00000000");
          }
       }
-      sym->size = rows*32;
+      sym->size = rows;
    }
    else if (strncmp(".word", sym->Type, 5) == 0)
    {
@@ -292,7 +298,7 @@ void makeDataRaw(Symbol* sym)
          strcat(raw, "\n");
          free(binRes);
       }
-      sym->size = count*32;
+      sym->size = count;
       free(temp);
       free(values);
    }
