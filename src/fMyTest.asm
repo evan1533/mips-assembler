@@ -21,7 +21,7 @@ val04:  .word    3137814
 .text
 main:
          addiu $t0, $t1, 4500
-#        la    $t0, val01
+         la    $t0, val01
 #        la    $t1, val02
 #        la    $t2, val03
 #

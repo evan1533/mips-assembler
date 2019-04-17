@@ -1,6 +1,7 @@
 #ifndef ASMPARSER_H
 #define ASMPARSER_H
 #include "ParseResult.h"
+#include "SymbolParser.h"
 #include <stdbool.h>
 
 
@@ -23,7 +24,7 @@ typedef struct _MIPSInstruction {
  *         A pointer to a proper ParseResult object whose fields have been
  *         correctly initialized to correspond to the target of pASM.
  */
-ParseResult* parseASM(const char* const pASM);
+ParseResult* parseASM(const char* const pASM, Symbol* sym);
 
 bool isInstruction(char* s);
 

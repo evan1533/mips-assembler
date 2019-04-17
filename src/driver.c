@@ -30,7 +30,7 @@
 #include "ParseResult.h"
 #include "ASMCleaner.h"
 
-void parseInstructions(FILE* f, FILE* out);
+void parseInstructions(FILE* f, FILE* out, Symbol* sym);
 void writeSymbols(FILE* out, Symbol* sym);
 
 int main(int argc, char** argv)
@@ -57,7 +57,7 @@ int main(int argc, char** argv)
 
    FILE *out = fopen(outFile, "w");
    Symbol* res = parseSymbols(clean);
-   parseInstructions(clean, out);  
+   parseInstructions(clean, out, res);  
    writeSymbols(out, res); 
    fclose(clean); 
    cleanSymbols(res);
@@ -67,7 +67,7 @@ int main(int argc, char** argv)
 
 
 
-void parseInstructions(FILE* f, FILE* out)
+void parseInstructions(FILE* f, FILE* out, Symbol* sym)
 {
    rewind(f);
    //FILE fp = fopen("nocomments.txt", "r");
@@ -76,7 +76,7 @@ void parseInstructions(FILE* f, FILE* out)
    bool parsing = false; 
    while(fgets(buf, 555, f))
    {
-      printf("INS: %s\n", buf); 
+      //printf("INS: %s\n", buf); 
       char* temp = calloc(100, sizeof(char));
       sscanf(buf, "%s", temp);
       if(strncmp(".text", temp, 6) == 0)
@@ -89,7 +89,7 @@ void parseInstructions(FILE* f, FILE* out)
       {
          if(isInstruction(temp))
          {
-            ParseResult* res = parseASM(buf);
+            ParseResult* res = parseASM(buf, sym);
             //Output the machine instruction
             fprintf(out, "%s\n", res->Machine);
             //printf("%s", buf);

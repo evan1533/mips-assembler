@@ -34,6 +34,7 @@ Symbol* initSymbol(char* pLabel, char* pType, char* pData)
    res->Label = pLabel;
    res->Type = pType;
    res->data = pData;
+   res->imm = 0;
    res->raw = NULL;
    res->next = NULL;
 
@@ -89,13 +90,13 @@ Symbol* parseSymbols(FILE* f)
       free(temp);
    }
 
-   /*Symbol* temp = head;
+   Symbol* temp = head;
    while(temp!=NULL)
    {
       printSymbol(temp);
       temp = temp->next;
       printf("\n");
-   }*/
+   }
    //printf("%s\n", buf);
    //fprintf(out, "\n");
    //fclose(out);
@@ -187,6 +188,7 @@ void makeDataRaw(Symbol* sym)
       
       token = strtok(temp, ", ");
       printf("TOK %s\n", token);
+      sym->imm = atoi(token);
       int count = 0;
       while(token != NULL)
       {  
@@ -212,7 +214,7 @@ void makeDataRaw(Symbol* sym)
 
 void printSymbol(Symbol* sym)
 {
-   printf("%s %s %s\n%s\n", sym->Label, sym->Type, sym->data, sym->raw);
+   printf("%s %s %s\n%d\n%s\n", sym->Label, sym->Type, sym->data, sym->imm, sym->raw);
 }
 
 static char* toBinary(int num, int size)
