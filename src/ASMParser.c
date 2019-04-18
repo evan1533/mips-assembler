@@ -234,9 +234,7 @@ static ParseResult* parseIType(const char* const pASM)
 	strcpy(res->Opcode, findOpcode(mnem));
 	strcpy(res->rtName, arg1);
 	res->rt = findRegister(arg1);
-   printf("\tTRBL: %s\n", mnem);
 	char* rtBin = toBinary(res->rt, 5);
-   printf("\t%s %d %s\n", rtBin, res->rt, res->rtName);
 	strncpy(res->RT, rtBin, 5);
 	free(rtBin);
 
@@ -297,7 +295,6 @@ static ParseResult* parseIType(const char* const pASM)
 	   char* arg2 = calloc(5,sizeof(char));
       char* temp = calloc(55, sizeof(char));
       strcpy(temp, pASM);
-      printf("BAD %s\n", temp);
 		sscanf(temp, "%*s %*s %3s%*1c %"SCNd16"", arg2, &imm);
 
 		res->rsName = calloc(5, sizeof(char));
@@ -311,7 +308,6 @@ static ParseResult* parseIType(const char* const pASM)
 
 		res->Imm = imm;
 		char* immBin = toBinary(imm, 16);
-      printf("%d -> %s\n", imm, immBin);
 		strcpy(res->IMM, immBin);
 		free(immBin);
 

@@ -8,6 +8,7 @@
 .data
 str01:  .asciiz  "abc"
 values: .word    1, 1, 2, 3, 5, 8, 13, 21, 34
+lol_values: .word 15:8
 num_vales: .word 9
 val01:  .word    839293
 str02:  .asciiz  "backward"

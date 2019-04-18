@@ -180,14 +180,14 @@ Symbol* parseDataSymbols(FILE* f, Symbol* tail)
             data = stripData(buf);
             label = strtok(label, ":");
             cur = initSymbol(label, type, data, address, dataAddr);
-            
+            printf("\t%s\n", data);
             makeDataRaw(cur);
-            printf("%X %d %x\n", dataAddr, cur->size, cur->size*4);
+            //printf("%X %d %x\n", dataAddr, cur->size, cur->size*4);
             dataAddr += (cur->size)*4;
             
             tail->next = cur;
             tail = cur;
-            printf("%s", buf);
+            //printf("%s", buf);
             //printSymbol(cur);
          }
       } 
@@ -280,14 +280,34 @@ void makeDataRaw(Symbol* sym)
       char* temp = calloc(500, sizeof(char));
       strncpy(temp, sym->data, 500);
       
-      token = strtok(temp, ", ");
-      //printf("TOK %s\n", token);
-      int count = 0;
-      while(token != NULL)
+      int count;
+      int val;
+      token = strtok(temp, ":");
+      count = atoi(token);
+      token = strtok(NULL, ":");
+      
+      if(token!=NULL)
       {
-         values[count] = atoi(token);
-         token = strtok(NULL, ", ");
-         count++;
+         val = atoi(token);
+         for(int i = 0; i < count; i++)
+         {
+            values[i] = val;
+         }
+      }
+      else
+      {
+         free(temp);
+         temp = calloc(500, sizeof(char));
+         strncpy(temp, sym->data, 500);
+         token = strtok(temp, ", ");
+         count = 0;
+         while(token != NULL)
+         {
+            values[count] = atoi(token);
+            token = strtok(NULL, ", ");
+            printf("TOK %s\n", token);
+            count++;
+         }
       }
       
       raw = calloc(count*34, sizeof(char));
