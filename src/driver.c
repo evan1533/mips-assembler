@@ -70,12 +70,19 @@ int main(int argc, char** argv)
    FILE *in = fopen(inFile, "r");
    printf("Removing comments...\n");
    removeComments(in);
-   FILE* clean = fopen("cleaned.asm", "rw");
+   FILE* clean = fopen("cleaned.asm", "r");
    fclose(in);
 
    FILE *out = fopen(outFile, "w");
    printf("Parsing symbols...\n");
    Symbol* res = parseSymbols(clean);
+     /*Symbol* temp = res->next;
+     while(temp != NULL)
+     {
+         printSymbol(temp);
+         printf("\n");
+         temp = temp->next;
+      }*/
 
    if(genTable)
    {
@@ -83,18 +90,23 @@ int main(int argc, char** argv)
    }
    else
    {
+      printf("Rewriting symbols...\n");
       replaceSymbols(clean, res);
-      //printf("Parsing instructions...\n");
-      //parseInstructions(clean, out, res);
+      
+      printf("Parsing instructions...\n");
+      FILE* repfile = fopen("symreplaced.txt", "r");
+      parseInstructions(repfile, out, res);
+      
       printf("Writing symbols...\n");  
-      //writeSymbols(out, res); 
-      Symbol* temp = res->next;
-      while(temp != NULL)
+      writeSymbols(out, res); 
+      fclose(repfile);
+      //Symbol* temp = res->next;
+      /*while(temp != NULL)
       {
          printSymbol(temp);
          printf("\n");
          temp = temp->next;
-      }
+      }*/
    }
 
    fclose(clean); 
@@ -113,10 +125,10 @@ void parseInstructions(FILE* f, FILE* out, Symbol* sym)
    //FILE fp = fopen("nocomments.txt", "r");
    char buf[555];
    //FILE* out = fopen("nocomments.txt", "w");
-   bool parsing = false; 
+   bool parsing = false;
+   printf("\tPASINg TIME\n"); 
    while(fgets(buf, 555, f))
    {
-      printf("INS: %s\n", buf); 
       char* temp = calloc(100, sizeof(char));
       sscanf(buf, "%s", temp);
       if(strncmp(".text", temp, 6) == 0)
@@ -129,10 +141,10 @@ void parseInstructions(FILE* f, FILE* out, Symbol* sym)
       {
          if(isInstruction(temp))
          {
-            ParseResult* res = parseASM(buf, sym);
+            ParseResult* res = parseASM(buf);
             //Output the machine instruction
             fprintf(out, "%s\n", res->Machine);
-            //printf("%s", buf);
+            printf("\t%s %s\n", res->Mnemonic, res->Machine);
             clearResult(res);
             free(res);
          }
@@ -158,9 +170,12 @@ void writeSymbols(FILE* out, Symbol* sym)
 {
    Symbol* temp;
    temp = sym->next;
-   while(temp!=NULL)
+   while(temp!=NULL && out)
    {
-      fprintf(out, "%s", temp->raw);
+      if(strcmp(temp->Type, ".text") != 0)
+      {
+         fprintf(out, "%s", temp->raw);
+      }
       temp = temp->next;
    }
 }

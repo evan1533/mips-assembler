@@ -24,7 +24,7 @@ typedef struct _MIPSInstruction {
  *         A pointer to a proper ParseResult object whose fields have been
  *         correctly initialized to correspond to the target of pASM.
  */
-ParseResult* parseASM(const char* const pASM, Symbol* sym);
+ParseResult* parseASM(const char* const pASM);
 
 bool isInstruction(char* s);
 bool isLabelInstruction(char* s);

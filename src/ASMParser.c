@@ -69,9 +69,8 @@ static uint8_t findRegister(char* rName);
 static char* findOpcode(char* inst);
 static char* findFunct(char* inst);
 static ParseResult* parseRType(const char* const pASM);
-static ParseResult* parseIType(const char* const pASM, Symbol* sym);
+static ParseResult* parseIType(const char* const pASM);
 static char* toBinary(int num, int size); 
-static char* getLabelAddress(char* label, Symbol* sym);
 
 /** Breaks up given the MIPS32 assembly instruction and creates a proper
  * ParseResult object storing information about that instruction.
@@ -92,7 +91,7 @@ static char* getLabelAddress(char* label, Symbol* sym);
  * A pointer to a proper ParseResult object whose fields have been
  * correctly initialized to correspond to the target of pASM.
  */	
-ParseResult* parseASM(const char* const pASM, Symbol* sym) {
+ParseResult* parseASM(const char* const pASM) {
    char* mnem = calloc(8, sizeof(char));
 	char* temp = calloc(50, sizeof(char));
 	strcpy(temp, pASM);
@@ -108,7 +107,7 @@ ParseResult* parseASM(const char* const pASM, Symbol* sym) {
 	}
 	else 
 	{
-		return parseIType(pASM, sym);
+		return parseIType(pASM);
 	}	
 	return NULL;
 }
@@ -199,7 +198,7 @@ static ParseResult* parseRType(const char* const pASM)
 	return res;
 }
 
-static ParseResult* parseIType(const char* const pASM, Symbol* sym)
+static ParseResult* parseIType(const char* const pASM)
 {
 	ParseResult* res = malloc(sizeof(ParseResult));
 
@@ -278,34 +277,16 @@ static ParseResult* parseIType(const char* const pASM, Symbol* sym)
 	}
    if( strcmp(mnem, "la") == 0 )
    {
-	   char* label = calloc(12,sizeof(char));
-      char* temp = calloc(55, sizeof(char));
-      strcpy(temp, pASM);
-      printf("%s\n", temp);
-		sscanf(temp, "%*s %*s %s", label);
-
-		res->rsName = calloc(6, sizeof(char));
-		strcpy(res->rsName, "$zero");
+      sscanf(res->ASMInstruction, "%*3s %*4s %"SCNd16"", &imm);
+		
+		res->Imm = imm;
+		char* immBin = toBinary(imm, 16);
+		strcpy(res->IMM, immBin);
+		free(immBin);
+		
 		res->rs = 0;
-
-		char* rsBin = toBinary(res->rs, 5);
-		res->RS = calloc(6, sizeof(char));
-		strcpy(res->RS, rsBin);
-		free(rsBin);
-
-      printf("Getting label data...\n");
-		//imm = getLabelData(label, sym);
-      //printf("Done!\n");
-		//res->Imm = imm;
-		//char* immBin = toBinary(imm, 16);
-		//strcpy(res->IMM, immBin);
-		//free(immBin);
-
-      char* tempAddr = getLabelAddress(label, sym);
-      printf("Done! %s\n", tempAddr);
-      strcpy(res->IMM, tempAddr);
-		free(label);
-      free(temp);
+		res->RS = calloc(7, sizeof(char));
+		strcpy(res->RS, "00000");
    }
 	//if(strcmp(mnem, "addi") == 0 || strcmp(mnem, "andi") == 0)
    else
@@ -313,7 +294,7 @@ static ParseResult* parseIType(const char* const pASM, Symbol* sym)
 	   char* arg2 = calloc(5,sizeof(char));
       char* temp = calloc(55, sizeof(char));
       strcpy(temp, pASM);
-      printf("%s\n", temp);
+      printf("BAD %s\n", temp);
 		sscanf(temp, "%*s %*s %3s%*1c %"SCNd16"", arg2, &imm);
 
 		res->rsName = calloc(5, sizeof(char));
@@ -322,7 +303,7 @@ static ParseResult* parseIType(const char* const pASM, Symbol* sym)
 
 		char* rsBin = toBinary(res->rs, 5);
 		res->RS = calloc(6, sizeof(char));
-		strcpy(res->RS, rsBin);
+		strncpy(res->RS, rsBin, 5);
 		free(rsBin);
 
 		res->Imm = imm;
@@ -350,21 +331,6 @@ static ParseResult* parseIType(const char* const pASM, Symbol* sym)
 	return res;
 }
 
-static char* getLabelAddress(char* label, Symbol* sym)
-{
-   sym = sym->next;
-   while( sym != NULL )
-   {
-      printf("addr: %s\n", sym->Address);
-      printf("%s %s\n", sym->Label, label);
-      if( strcmp(sym->Label, label) == 0)
-      {
-         return sym->Address;
-      }
-      sym = sym->next;
-   }
-   return NULL;
-}
 
 static char* toBinary(int num, int size)
 {

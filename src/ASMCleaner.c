@@ -7,6 +7,8 @@
 #include "ASMParser.h" 
 #include "SymbolParser.h"
 
+static int getLabelAddress(char* label, Symbol* sym);
+
 void removeComments(FILE* f)
 {
    char buf[555];
@@ -58,7 +60,7 @@ void replaceSymbols(FILE* f, Symbol* sym)
    rewind(f);
    //FILE fp = fopen("nocomments.txt", "r");
    char buf[555];
-   //FILE* out = fopen("nocomments.txt", "w");
+   FILE* out = fopen("symreplaced.txt", "w");
    bool parsing = false; 
    while(fgets(buf, 555, f))
    {
@@ -67,6 +69,7 @@ void replaceSymbols(FILE* f, Symbol* sym)
       if(strncmp(".text", temp, 6) == 0)
       {
          parsing = true;
+         fprintf(out, "%s", buf);
          free(temp);
          continue;
       }
@@ -77,23 +80,40 @@ void replaceSymbols(FILE* f, Symbol* sym)
             char mnem[3];
             char reg[4];
             char label[33];
-            sscanf(buf, "%s %s %s", mnem, reg, label);
-            fprintf(f, "%s %s %d\n", mnem, reg, 6969);
+            sscanf(buf, "%s %3s, %s", mnem, reg, label);
+            int lblAddr = getLabelAddress(label, sym);
+            fprintf(out, "%s %s, %d\n", mnem, reg, lblAddr);
             //Output the machine instruction
             //printf("%s", buf);
          }
          else
          {
-            fprintf(f, "%s", buf);
+            fprintf(out, "%s", buf);
          }
       }
       else
       {
-         fprintf(f, "%s", buf);
+         fprintf(out, "%s", buf);
       }
       free(temp);
    }
    //printf("%s\n", buf);
    //fprintf(out, "\n");
-
+   fclose(out);
 }
+
+
+static int getLabelAddress(char* label, Symbol* sym)
+{
+   sym = sym->next;
+   while( sym != NULL )
+   {
+      if( strcmp(sym->Label, label) == 0)
+      {
+         return sym->address;
+      }
+      sym = sym->next;
+   }
+   return -1;
+}
+
