@@ -86,8 +86,8 @@ void replaceSymbols(FILE* f, Symbol* sym)
             if( strcmp(temp, "beq") == 0 || strcmp(temp, "bne") == 0)
             {
                char mnem[6];
-               char* reg1 = calloc(6, sizeof(char));
-               char* reg2 = calloc(6, sizeof(char));
+               char reg1[6];
+               char reg2[6];
                char label[33];
                //printf("\tLABL: %s\n", temp);
                sscanf(buf, "%s %s %s %s", mnem, reg1, reg2, label);
@@ -97,20 +97,17 @@ void replaceSymbols(FILE* f, Symbol* sym)
                int relativeAddr = (tempSym->address - curAddr)/4;
                //printf("\t%s %s %d %d\n",mnem, label, curAddr, relativeAddr);
                fprintf(out, "%s %s %s %d\n", mnem, reg1, reg2, relativeAddr);
-               free(reg1);
-               free(reg2);
             }
             else
             {
                char mnem[6];
-               char* reg = calloc(6, sizeof(char));
+               char reg[6];
                char label[33];
                //printf("\tLABL: %s\n", temp);
                sscanf(buf, "%s %s %s", mnem, reg, label);
                //reg = strtok(reg, ",");
                int lblAddr = getLabelAddress(label, sym);
                fprintf(out, "%s %s %d\n", mnem, reg, lblAddr);
-               free(reg);
                //Output the machine instruction
                //printf("%s", buf);
             }
