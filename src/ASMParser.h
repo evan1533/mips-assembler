@@ -9,6 +9,7 @@ typedef struct _MIPSInstruction {
    char* mnemonic;
    char* opcode;
    char* funct;
+   bool  hasLabel;
 } MIPSInstruction;
 
 

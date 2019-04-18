@@ -77,14 +77,35 @@ void replaceSymbols(FILE* f, Symbol* sym)
       {
          if(isLabelInstruction(temp))
          {
-            char mnem[3];
-            char reg[4];
-            char label[33];
-            sscanf(buf, "%s %3s, %s", mnem, reg, label);
-            int lblAddr = getLabelAddress(label, sym);
-            fprintf(out, "%s %s, %d\n", mnem, reg, lblAddr);
-            //Output the machine instruction
-            //printf("%s", buf);
+            if( strcmp(temp, "beq") == 0 || strcmp(temp, "bne") == 0)
+            {
+               char mnem[6];
+               char* reg1 = calloc(6, sizeof(char));
+               char* reg2 = calloc(6, sizeof(char));
+               char label[33];
+               //printf("\tLABL: %s\n", temp);
+               sscanf(buf, "%s %s %s %s", mnem, reg1, reg2, label);
+               //reg1 = strtok(reg1, ",");
+               //reg2 = strtok(reg2, ",");
+               int lblAddr = getLabelAddress(label, sym);
+               fprintf(out, "%s %s %s %d\n", mnem, reg1, reg2, lblAddr);
+               free(reg1);
+               free(reg2);
+            }
+            else
+            {
+               char mnem[6];
+               char* reg = calloc(6, sizeof(char));
+               char label[33];
+               //printf("\tLABL: %s\n", temp);
+               sscanf(buf, "%s %s %s", mnem, reg, label);
+               //reg = strtok(reg, ",");
+               int lblAddr = getLabelAddress(label, sym);
+               fprintf(out, "%s %s %d\n", mnem, reg, lblAddr);
+               free(reg);
+               //Output the machine instruction
+               //printf("%s", buf);
+            }
          }
          else
          {

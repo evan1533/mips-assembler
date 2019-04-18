@@ -1,17 +1,22 @@
 .data
-str01:  .asciiz  "abc"
-values: .word    1, 1, 2, 3, 5, 8, 13, 21, 34
-lol_values: .word 15:8
-num_vales: .word 9
-val01:  .word    839293
-str02:  .asciiz  "backward"
-val02:  .word    -839293
-str03:  .asciiz  "to"
-val03:  .word    903923
-str04:  .asciiz  "end"
-str05:  .asciiz  "Pointers are fun!"
-val04:  .word    3137814
+list01: .word  -342143:6
+val01:  .word  4132343
 .text
-main:
-addiu $t0, $t1, 4500
-add $t3, $s0, $s1
+la $s0, 8192
+la $s2, 8216
+lw   $s4, 0($s1)
+add  $s1, $zero, $s0
+mul  $s3, $s1, $s2
+beq $zero, $zero, 44
+again:
+mul  $s4, $s1, $s1
+lw   $s4, -16($s4)
+nor  $s3, $s3, $s4
+beq $s3, $zero, 52
+lw   $s0, 42($s1)
+test:
+bne $s1, $s2, 24
+beq $s1, $s4, 24
+exit:
+addi $v0, $zero, 10
+syscall

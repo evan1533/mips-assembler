@@ -31,6 +31,13 @@
 #define NUM_REGISTERS 32
 #define NUM_INSTRUCTIONS 26
 
+static uint8_t findRegister(char* rName);
+static char* findOpcode(char* inst);
+static char* findFunct(char* inst);
+static ParseResult* parseRType(const char* const pASM);
+static ParseResult* parseIType(const char* const pASM);
+static char* toBinary(int num, int size); 
+
 static char* registerTable[NUM_REGISTERS] = {
 	"$zero", "$at", "$v0", "$v1", "$a0", "$a1", "$a2", "$a3",
 	 "$t0", "$t1", "$t2", "$t3", "$t4", "$t5", "$t6", "$t7",
@@ -38,39 +45,33 @@ static char* registerTable[NUM_REGISTERS] = {
 	 "$t8", "$t9", "$k0", "$k1", "$gp", "$sp", "$fp", "$ra"};
 
 static MIPSInstruction mipsTable[NUM_INSTRUCTIONS] = {
-   {"add",    "000000", "100000"},
-   {"and",    "000000", "100100"},
-   {"sub",    "000000", "100010"}, 
-   {"addi",   "001000",   NULL  },
-   {"andi",   "001100",   NULL  },
-   {"lui",    "001111",   NULL  },
-   {"lw",     "100011",   NULL  },
-   {"sw",     "101011",   NULL  },
-   {"addu",   "000000", "100001"},
-   {"addiu",  "001001",   NULL  },
-   {"mul",    "000000", "011000"},
-   {"nop",    "000000", "000000"},
-   {"nor",    "000000", "100111"},
-   {"sll",    "000000", "000000"},
-   {"slt",    "000000", "101010"},
-   {"slti",   "001010",   NULL  },
-   {"sra",    "000000", "000011"},
-   {"srav",   "000000", "000111"},
-   {"beq",    "000100",   NULL  },
-   {"blez",   "000110",   NULL  },
-   {"bgtz",   "000111",   NULL  },
-   {"bne",    "000101",   NULL  },
-   {"j",      "000010",   NULL  },
-   {"syscall","000000", "001100"},
-   {"addiu",  "001001",   NULL  },
-   {"la",     "001000",   NULL  } };
+{"add",    "000000", "100000", false },
+{"and",    "000000", "100100", false },
+{"sub",    "000000", "100010", false }, 
+{"addi",   "001000",   NULL  , false },
+{"andi",   "001100",   NULL  , false },
+{"lui",    "001111",   NULL  , false },
+{"lw",     "100011",   NULL  , false },
+{"sw",     "101011",   NULL  , false },
+{"addu",   "000000", "100001", false },
+{"addiu",  "001001",   NULL  , false },
+{"mul",    "011100", "000010", false },
+{"nop",    "000000", "000000", false },
+{"nor",    "000000", "100111", false },
+{"sll",    "000000", "000000", false },
+{"slt",    "000000", "101010", false },
+{"slti",   "001010",   NULL  , false },
+{"sra",    "000000", "000011", false },
+{"srav",   "000000", "000111", false },
+{"beq",    "000100",   NULL  , true  },
+{"blez",   "000110",   NULL  , true  },
+{"bgtz",   "000111",   NULL  , true  },
+{"bne",    "000101",   NULL  , true  },
+{"j",      "000010",   NULL  , true  },
+{"syscall","000000", "001100", false },
+{"addiu",  "001001",   NULL  , false },
+{"la",     "001000",   NULL  , true } };
 
-static uint8_t findRegister(char* rName);
-static char* findOpcode(char* inst);
-static char* findFunct(char* inst);
-static ParseResult* parseRType(const char* const pASM);
-static ParseResult* parseIType(const char* const pASM);
-static char* toBinary(int num, int size); 
 
 /** Breaks up given the MIPS32 assembly instruction and creates a proper
  * ParseResult object storing information about that instruction.
@@ -97,11 +98,11 @@ ParseResult* parseASM(const char* const pASM) {
 	strcpy(temp, pASM);
 	sscanf(temp,"%s", mnem);
 	char* opcode = findOpcode(mnem);
-   
+   printf("\t%s\n", mnem); 
    free(mnem);
    free(temp);
 
-	if(strcmp(opcode,"000000") == 0)
+	if(strcmp(opcode,"000000") == 0 || strcmp(opcode, "011100") == 0)
 	{
 		return parseRType(pASM);
 	}
@@ -141,7 +142,10 @@ static ParseResult* parseRType(const char* const pASM)
 	res->IMM = NULL;
    res->Machine = calloc(33, sizeof(char));
 	
-	sscanf(pASM,"%s %3s%*c %3s%*c %3s", mnem, arg1, arg2, arg3);
+	sscanf(pASM,"%s %s %s %s", mnem, arg1, arg2, arg3);
+   arg1 = strtok(arg1, ",");
+   arg2 = strtok(arg2, ",");
+   
    if( strncmp(mnem, "syscall", 7) == 0)
    {
       strcpy(res->Mnemonic, mnem);
@@ -155,7 +159,7 @@ static ParseResult* parseRType(const char* const pASM)
    else
    {
       strcpy(res->Mnemonic, mnem);
-      strcpy(res->Opcode, "000000");
+      strcpy(res->Opcode, findOpcode(mnem));
       strcpy(res->Funct, findFunct(mnem));
       strcpy(res->Shamt, "00000");
       strcpy(res->rdName, arg1);
@@ -295,7 +299,8 @@ static ParseResult* parseIType(const char* const pASM)
 	   char* arg2 = calloc(5,sizeof(char));
       char* temp = calloc(55, sizeof(char));
       strcpy(temp, pASM);
-		sscanf(temp, "%*s %*s %3s%*1c %"SCNd16"", arg2, &imm);
+		sscanf(temp, "%*s %*s %s %"SCNd16"", arg2, &imm);
+      arg2 = strtok(arg2, ",");
 
 		res->rsName = calloc(5, sizeof(char));
 		strcpy(res->rsName, arg2);
@@ -413,9 +418,14 @@ bool isInstruction(char* s)
 
 bool isLabelInstruction(char* s)
 {
-	if(strcmp(s, "la") == 0)// || strcmp(s, "lw") == 0)
+   for(int i = 0; i < NUM_INSTRUCTIONS; i++)
 	{
-		return true;
+		MIPSInstruction cur = (*(mipsTable+i));
+		if(strcmp(s, cur.mnemonic) == 0)
+		{
+			return cur.hasLabel;
+		}
 	}
-	return false;
+
+   return false;
 }

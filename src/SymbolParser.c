@@ -283,12 +283,12 @@ void makeDataRaw(Symbol* sym)
       int count;
       int val;
       token = strtok(temp, ":");
-      count = atoi(token);
+      val = atoi(token);
       token = strtok(NULL, ":");
       
       if(token!=NULL)
       {
-         val = atoi(token);
+         count = atoi(token);
          for(int i = 0; i < count; i++)
          {
             values[i] = val;
