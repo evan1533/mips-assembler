@@ -208,6 +208,7 @@ static ParseResult* parseIType(const char* const pASM)
 	char* arg1 = calloc(10,sizeof(char));
 	int16_t imm = 0;
 	sscanf(pASM, "%s %s", mnem, arg1);
+   arg1 = strtok(arg1, ",");
 
 	//Set all fields to default unused value, then fill in the fields that we use as
 	//we go along, thus in the end only the unused fields will still have the default value
@@ -233,7 +234,9 @@ static ParseResult* parseIType(const char* const pASM)
 	strcpy(res->Opcode, findOpcode(mnem));
 	strcpy(res->rtName, arg1);
 	res->rt = findRegister(arg1);
+   printf("\tTRBL: %s\n", mnem);
 	char* rtBin = toBinary(res->rt, 5);
+   printf("\t%s %d %s\n", rtBin, res->rt, res->rtName);
 	strncpy(res->RT, rtBin, 5);
 	free(rtBin);
 
@@ -275,7 +278,7 @@ static ParseResult* parseIType(const char* const pASM)
 		free(arg2);
       free(temp);
 	}
-   if( strcmp(mnem, "la") == 0 )
+   else if( strcmp(mnem, "la") == 0 )
    {
       sscanf(res->ASMInstruction, "%*3s %*4s %"SCNd16"", &imm);
 		
