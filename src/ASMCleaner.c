@@ -8,6 +8,7 @@
 #include "SymbolParser.h"
 
 static int getLabelAddress(char* label, Symbol* sym);
+static Symbol* getSymbol(char* label, Symbol* sym);
 
 void removeComments(FILE* f)
 {
@@ -62,6 +63,7 @@ void replaceSymbols(FILE* f, Symbol* sym)
    char buf[555];
    FILE* out = fopen("symreplaced.txt", "w");
    bool parsing = false; 
+   int curAddr = 0;
    while(fgets(buf, 555, f))
    {
       char* temp = calloc(100, sizeof(char));
@@ -75,6 +77,10 @@ void replaceSymbols(FILE* f, Symbol* sym)
       }
       if(parsing)
       {
+         if(isInstruction(temp))
+         {
+            curAddr+=4;
+         }
          if(isLabelInstruction(temp))
          {
             if( strcmp(temp, "beq") == 0 || strcmp(temp, "bne") == 0)
@@ -87,8 +93,10 @@ void replaceSymbols(FILE* f, Symbol* sym)
                sscanf(buf, "%s %s %s %s", mnem, reg1, reg2, label);
                //reg1 = strtok(reg1, ",");
                //reg2 = strtok(reg2, ",");
-               int lblAddr = getLabelAddress(label, sym);
-               fprintf(out, "%s %s %s %d\n", mnem, reg1, reg2, lblAddr);
+               Symbol* tempSym = getSymbol(label, sym);
+               int relativeAddr = (tempSym->address - curAddr)/4;
+               //printf("\t%s %s %d %d\n",mnem, label, curAddr, relativeAddr);
+               fprintf(out, "%s %s %s %d\n", mnem, reg1, reg2, relativeAddr);
                free(reg1);
                free(reg2);
             }
@@ -111,6 +119,7 @@ void replaceSymbols(FILE* f, Symbol* sym)
          {
             fprintf(out, "%s", buf);
          }
+
       }
       else
       {
@@ -138,3 +147,16 @@ static int getLabelAddress(char* label, Symbol* sym)
    return -1;
 }
 
+static Symbol* getSymbol(char* label, Symbol* sym)
+{
+   sym = sym->next;
+   while( sym != NULL )
+   {
+      if( strcmp(sym->Label, label) == 0)
+      {
+         return sym;
+      }
+      sym = sym->next;
+   }
+   return NULL;
+}

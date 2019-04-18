@@ -1,22 +1,37 @@
 .data
-list01: .word  -342143:6
-val01:  .word  4132343
+A:  .word  -32768
+B:  .word    -255
+C:  .word     255
+D:  .word   32767
 .text
-la   $s0, list01
-la   $s2, val01
-lw   $s4, 0($s1)
-add  $s1, $zero, $s0
-mul  $s3, $s1, $s2
-beq  $zero, $zero, test
-again:
-mul  $s4, $s1, $s1
-lw   $s4, -16($s4)
-nor  $s3, $s3, $s4
-beq  $s3, $zero, exit
-lw   $s0, 42($s1)
-test:
-bne  $s1, $s2, again
-beq  $s1, $s4, again
-exit:
+la   $s0, A
+lw   $s1, 0($s0)
+la   $s0, B
+lw   $s2, 0($s0)
+la   $s0, C
+lw   $s3, 0($s0)
+la   $s0, D
+Aberdeen:
+beq  $s1, $s2, Skye
+add  $s1, $s1, $s3
+beq  $s1, $s2, Culloden
+nor  $s1, $s3, $s1
+bne  $s1, $s3, Stirling
+add  $s1, $s1, $s3
+beq  $s1, $s2, Aberdeen
+Skye:
+mul  $s2, $s2, $s4
+bne  $s2, $s4, Craig
+addi $s2, $s2, 1023
+beq  $s1, $s2, Aberdeen
+Stirling:
+bne  $s2, $s3, Aberdeen
+Craig:
+add  $s3, $s4, $s1
+beq  $s3, $s2, Skye
+beq  $s3, $s1, Culloden
+beq  $s3, $s4, Craig
+beq  $zero, $zero, Aberdeen
+Culloden:
 addi $v0, $zero, 10
 syscall

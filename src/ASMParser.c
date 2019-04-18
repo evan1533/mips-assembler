@@ -36,6 +36,7 @@ static char* findOpcode(char* inst);
 static char* findFunct(char* inst);
 static ParseResult* parseRType(const char* const pASM);
 static ParseResult* parseIType(const char* const pASM);
+static ParseResult* parsePseudo(const char* const pASM);
 static char* toBinary(int num, int size); 
 
 static char* registerTable[NUM_REGISTERS] = {
@@ -98,7 +99,7 @@ ParseResult* parseASM(const char* const pASM) {
 	strcpy(temp, pASM);
 	sscanf(temp,"%s", mnem);
 	char* opcode = findOpcode(mnem);
-   printf("\t%s\n", mnem); 
+   //printf("\t%s\n", mnem); 
    free(mnem);
    free(temp);
 
@@ -219,7 +220,7 @@ static ParseResult* parseIType(const char* const pASM)
 	res->Mnemonic = calloc(6, sizeof(char));
 	res->rdName = NULL;
 	res->rsName = NULL;
-	res->rtName = calloc(5, sizeof(char));
+	res->rtName = calloc(6, sizeof(char));
 	res->Imm = 0;
 	res->rd = 255;
 	res->rs = 255;
@@ -236,6 +237,7 @@ static ParseResult* parseIType(const char* const pASM)
 
 	strcpy(res->Mnemonic, mnem);
 	strcpy(res->Opcode, findOpcode(mnem));
+
 	strcpy(res->rtName, arg1);
 	res->rt = findRegister(arg1);
 	char* rtBin = toBinary(res->rt, 5);
@@ -294,8 +296,45 @@ static ParseResult* parseIType(const char* const pASM)
 		strcpy(res->RS, "00000");
    }
 	//if(strcmp(mnem, "addi") == 0 || strcmp(mnem, "andi") == 0)
-   else
+   else if(strcmp(mnem, "beq") == 0 || strcmp(mnem, "bne") == 0)
 	{
+	   char* arg2 = calloc(5,sizeof(char));
+      char* temp = calloc(55, sizeof(char));
+      strcpy(temp, pASM);
+		sscanf(temp, "%*s %*s %s %"SCNd16"", arg2, &imm);
+      arg2 = strtok(arg2, ",");
+      
+
+
+      res->rsName = calloc(6, sizeof(char));
+		strncpy(res->rsName, res->rtName, 5);
+		res->rs = res->rt;
+      res->RS = calloc(6, sizeof(char));
+      strncpy(res->RS, res->RT, 5);
+
+		/*char* rsBin = toBinary(res->rs, 5);
+		res->RS = calloc(6, sizeof(char));
+		strncpy(res->RS, rsBin, 5);
+		free(rsBin);*/
+
+
+      strncpy(res->rtName, arg2, 5);
+   	res->rt = findRegister(arg2);
+   	char* rtBin = toBinary(res->rt, 5);
+   	strncpy(res->RT, rtBin, 5);
+   	free(rtBin);
+
+
+		res->Imm = imm;
+		char* immBin = toBinary(imm, 16);
+		strcpy(res->IMM, immBin);
+		free(immBin);
+
+		free(arg2);
+      free(temp);
+	}
+   else
+   {
 	   char* arg2 = calloc(5,sizeof(char));
       char* temp = calloc(55, sizeof(char));
       strcpy(temp, pASM);
@@ -318,7 +357,7 @@ static ParseResult* parseIType(const char* const pASM)
 
 		free(arg2);
       free(temp);
-	}
+   }
 
    //Build the machine code instruction
    char* machine = calloc(33, sizeof(char));
@@ -333,6 +372,11 @@ static ParseResult* parseIType(const char* const pASM)
 	free(arg1);
 
 	return res;
+}
+
+static ParseResult* parsePseudo(const char* const pASM)
+{
+   return NULL;  
 }
 
 

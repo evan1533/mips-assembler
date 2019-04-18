@@ -113,23 +113,23 @@ Symbol* parseTextSymbols(FILE* f, Symbol* tail)
             char* label = calloc(50, sizeof(char));
             char* type = calloc(9, sizeof(char));
             strcpy(type, ".text");
-            printf("\tScanning label...\n");
+            //printf("\tScanning label...\n");
             sscanf(buf, "%s", label);
    
             int bufLen = strlen(buf)-1;
             if(buf[bufLen-1] == ':')
             {
-               printf("\tLBL: %s\n", label);
+               //printf("\tLBL: %s\n", label);
                char* address = toBinary(textAddr, 32);
                label = strtok(label, ":");
                cur = initSymbol(label, type, NULL, address, textAddr);
                tail->next = cur;
                tail = cur;
-               printf("%s", buf);
+               //printf("%s", buf);
             }
             else if (bufLen > 0)
             {
-               printf("\t%X -> %s\n", textAddr, buf);
+               //printf("\t%X -> %s\n", textAddr, buf);
                textAddr+=4;
                free(label);
                free(type);
@@ -180,7 +180,7 @@ Symbol* parseDataSymbols(FILE* f, Symbol* tail)
             data = stripData(buf);
             label = strtok(label, ":");
             cur = initSymbol(label, type, data, address, dataAddr);
-            printf("\t%s\n", data);
+            //printf("\t%s\n", data);
             makeDataRaw(cur);
             //printf("%X %d %x\n", dataAddr, cur->size, cur->size*4);
             dataAddr += (cur->size)*4;
@@ -305,7 +305,7 @@ void makeDataRaw(Symbol* sym)
          {
             values[count] = atoi(token);
             token = strtok(NULL, ", ");
-            printf("TOK %s\n", token);
+            //printf("TOK %s\n", token);
             count++;
          }
       }

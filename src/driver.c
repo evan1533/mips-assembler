@@ -126,7 +126,7 @@ void parseInstructions(FILE* f, FILE* out, Symbol* sym)
    char buf[555];
    //FILE* out = fopen("nocomments.txt", "w");
    bool parsing = false;
-   printf("\tPASINg TIME\n"); 
+   //printf("\tPASINg TIME\n"); 
    while(fgets(buf, 555, f))
    {
       char* temp = calloc(100, sizeof(char));
@@ -144,7 +144,7 @@ void parseInstructions(FILE* f, FILE* out, Symbol* sym)
             ParseResult* res = parseASM(buf);
             //Output the machine instruction
             fprintf(out, "%s\n", res->Machine);
-            printf("\t%s %s\n", res->Mnemonic, res->Machine);
+            //printf("\t%s %s\n", res->Mnemonic, res->Machine);
             clearResult(res);
             free(res);
          }
@@ -161,7 +161,7 @@ void createSymbolTable(FILE* out, Symbol* sym)
    temp = sym->next;
    while(temp!=NULL)
    {
-      fprintf(out, "0x%08X\t%s\n", temp->address, temp->Label);
+      fprintf(out, "0x%08X:  %s\n", temp->address, temp->Label);
       temp = temp->next;
    }
 }

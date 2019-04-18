@@ -6,3 +6,4 @@ testing/assemble
 testing/build/*
 testing/compare
 assemble
+*.swp
