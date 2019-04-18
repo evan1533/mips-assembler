@@ -126,9 +126,9 @@ static ParseResult* parseRType(const char* const pASM)
 	char* arg3 = calloc(10,sizeof(char));
 
 	res->Mnemonic = calloc(8, sizeof(char));
-	res->rdName = calloc(4, sizeof(char));
-	res->rsName = calloc(4, sizeof(char));
-	res->rtName = calloc(4, sizeof(char));
+	res->rdName = calloc(7, sizeof(char));
+	res->rsName = calloc(7, sizeof(char));
+	res->rtName = calloc(7, sizeof(char));
 	res->Imm = 0;
 	res->rd = 255;
 	res->rs = 255;
@@ -136,7 +136,7 @@ static ParseResult* parseRType(const char* const pASM)
    res->shamt = 255;
 	res->Opcode = calloc(7, sizeof(char));
 	res->Funct = calloc(7, sizeof(char));
-   res->Shamt = calloc(6, sizeof(char));
+   res->Shamt = calloc(7, sizeof(char));
 	res->RD = calloc(6, sizeof(char));
 	res->RS = calloc(6, sizeof(char));
 	res->RT = calloc(6, sizeof(char));
@@ -212,7 +212,8 @@ static ParseResult* parseIType(const char* const pASM)
 	char* mnem = calloc(6,sizeof(char));
 	char* arg1 = calloc(10,sizeof(char));
 	int16_t imm = 0;
-	sscanf(pASM, "%s %s", mnem, arg1);
+	sscanf(pASM, "%s %s ", mnem, arg1);
+   printf("\t%s\n", arg1);
    arg1 = strtok(arg1, ",");
 
 	//Set all fields to default unused value, then fill in the fields that we use as
@@ -298,7 +299,7 @@ static ParseResult* parseIType(const char* const pASM)
 	//if(strcmp(mnem, "addi") == 0 || strcmp(mnem, "andi") == 0)
    else if(strcmp(mnem, "beq") == 0 || strcmp(mnem, "bne") == 0)
 	{
-	   char* arg2 = calloc(5,sizeof(char));
+	   char* arg2 = calloc(8,sizeof(char));
       char* temp = calloc(55, sizeof(char));
       strcpy(temp, pASM);
 		sscanf(temp, "%*s %*s %s %"SCNd16"", arg2, &imm);
@@ -306,7 +307,7 @@ static ParseResult* parseIType(const char* const pASM)
       
 
 
-      res->rsName = calloc(6, sizeof(char));
+      res->rsName = calloc(7, sizeof(char));
 		strncpy(res->rsName, res->rtName, 5);
 		res->rs = res->rt;
       res->RS = calloc(6, sizeof(char));

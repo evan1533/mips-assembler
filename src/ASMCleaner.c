@@ -85,9 +85,9 @@ void replaceSymbols(FILE* f, Symbol* sym)
          {
             if( strcmp(temp, "beq") == 0 || strcmp(temp, "bne") == 0)
             {
-               char mnem[6];
-               char reg1[6];
-               char reg2[6];
+               char mnem[8];
+               char reg1[8];
+               char reg2[8];
                char label[33];
                //printf("\tLABL: %s\n", temp);
                sscanf(buf, "%s %s %s %s", mnem, reg1, reg2, label);
@@ -100,8 +100,8 @@ void replaceSymbols(FILE* f, Symbol* sym)
             }
             else
             {
-               char mnem[6];
-               char reg[6];
+               char mnem[8];
+               char reg[8];
                char label[33];
                //printf("\tLABL: %s\n", temp);
                sscanf(buf, "%s %s %s", mnem, reg, label);
