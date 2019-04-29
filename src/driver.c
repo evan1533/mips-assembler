@@ -90,6 +90,9 @@ int main(int argc, char** argv)
    }
    else
    {
+      printf("Replacing Pseudo...\n");
+      replacePseudo(clean);
+
       printf("Rewriting symbols...\n");
       replaceSymbols(clean, res);
       

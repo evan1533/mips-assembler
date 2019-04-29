@@ -12,6 +12,7 @@ static Symbol* getSymbol(char* label, Symbol* sym);
 
 void removeComments(FILE* f)
 {
+   rewind(f);
    char buf[555];
    FILE* out = fopen("cleaned.asm", "w");
    
@@ -53,6 +54,35 @@ void removeComments(FILE* f)
       }
    }
    fclose(out);
+}
+
+
+void replacePseudo(FILE* f)
+{
+   rewind(f);
+   //FILE fp = fopen("nocomments.txt", "r");
+   char buf[555];
+   //FILE* out = fopen("nocomments.txt", "w");
+   bool parsing = false;
+   //printf("\tPASINg TIME\n"); 
+   while(fgets(buf, 555, f))
+   {
+      char* temp = calloc(100, sizeof(char));
+      sscanf(buf, "%s", temp);
+      if ( strncmp(temp, "la", 2) == 0)
+      {
+         char* arg1 = calloc(33, sizeof(char));
+         char* arg2 = calloc(33, sizeof(char));
+         sscanf(buf, "%*s %s %s", arg1, arg2);
+         printf("\t%s %s %s\n", temp, arg1, arg2);
+         
+         printf("\taddi %s $zero, %s\n\n", arg1, arg2);
+         
+         free(arg1);
+         free(arg2);
+      }
+   }
+
 }
 
 
