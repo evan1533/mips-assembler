@@ -49,7 +49,7 @@ static MIPSInstruction mipsTable[NUM_INSTRUCTIONS] = {
 {"add",    "000000", "100000", false },
 {"and",    "000000", "100100", false },
 {"sub",    "000000", "100010", false }, 
-{"addi",   "001000",   NULL  , false },
+{"addi",   "001000",   NULL  , true },
 {"andi",   "001100",   NULL  , false },
 {"lui",    "001111",   NULL  , false },
 {"lw",     "100011",   NULL  , false },
@@ -283,7 +283,7 @@ static ParseResult* parseIType(const char* const pASM)
 		free(arg2);
       free(temp);
 	}
-   else if( strcmp(mnem, "la") == 0 )
+   /*else if( strcmp(mnem, "la") == 0 )
    {
       sscanf(res->ASMInstruction, "%*3s %*4s %"SCNd16"", &imm);
 		
@@ -295,7 +295,7 @@ static ParseResult* parseIType(const char* const pASM)
 		res->rs = 0;
 		res->RS = calloc(7, sizeof(char));
 		strcpy(res->RS, "00000");
-   }
+   }*/
 	//if(strcmp(mnem, "addi") == 0 || strcmp(mnem, "andi") == 0)
    else if(strcmp(mnem, "beq") == 0 || strcmp(mnem, "bne") == 0)
 	{
@@ -340,6 +340,7 @@ static ParseResult* parseIType(const char* const pASM)
       char* temp = calloc(55, sizeof(char));
       strcpy(temp, pASM);
 		sscanf(temp, "%*s %*s %s %"SCNd16"", arg2, &imm);
+      printf("%s\n", temp);
       arg2 = strtok(arg2, ",");
 
 		res->rsName = calloc(5, sizeof(char));
@@ -354,6 +355,7 @@ static ParseResult* parseIType(const char* const pASM)
 		res->Imm = imm;
 		char* immBin = toBinary(imm, 16);
 		strcpy(res->IMM, immBin);
+      printf("%d -> %s\n", imm, immBin);
 		free(immBin);
 
 		free(arg2);

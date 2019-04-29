@@ -4,34 +4,34 @@ B:  .word    -255
 C:  .word     255
 D:  .word   32767
 .text
-la   $s0, A
-lw   $s1, 0($s0)
-la   $s0, B
-lw   $s2, 0($s0)
-la   $s0, C
-lw   $s3, 0($s0)
-la   $s0, D
+	 addi $s0, $zero, A
+        lw   $s1, 0($s0)
+	 addi $s0, $zero, B
+        lw   $s2, 0($s0)
+	 addi $s0, $zero, C
+        lw   $s3, 0($s0)
+	 addi $s0, $zero, D
 Aberdeen:
-beq  $s1, $s2, Skye
-add  $s1, $s1, $s3
-beq  $s1, $s2, Culloden
-nor  $s1, $s3, $s1
-bne  $s1, $s3, Stirling
-add  $s1, $s1, $s3
-beq  $s1, $s2, Aberdeen
+        beq  $s1, $s2, Skye
+        add  $s1, $s1, $s3
+        beq  $s1, $s2, Culloden
+        nor  $s1, $s3, $s1
+        bne  $s1, $s3, Stirling
+        add  $s1, $s1, $s3
+        beq  $s1, $s2, Aberdeen
 Skye:
-mul  $s2, $s2, $s4
-bne  $s2, $s4, Craig
-addi $s2, $s2, 1023
-beq  $s1, $s2, Aberdeen
+        mul  $s2, $s2, $s4
+        bne  $s2, $s4, Craig
+        addi $s2, $s2, 1023
+        beq  $s1, $s2, Aberdeen
 Stirling:
-bne  $s2, $s3, Aberdeen
+        bne  $s2, $s3, Aberdeen
 Craig:
-add  $s3, $s4, $s1
-beq  $s3, $s2, Skye
-beq  $s3, $s1, Culloden
-beq  $s3, $s4, Craig
-beq  $zero, $zero, Aberdeen
+        add  $s3, $s4, $s1
+        beq  $s3, $s2, Skye
+        beq  $s3, $s1, Culloden
+        beq  $s3, $s4, Craig
+        beq  $zero, $zero, Aberdeen
 Culloden:
-addi $v0, $zero, 10
-syscall
+        addi $v0, $zero, 10
+        syscall

@@ -11,7 +11,7 @@ values: .word    1, 1, 2, 3, 5, 8, 13, 21, 34
 lol_values: .word 15:8
 num_vales: .word 9
 val01:  .word    839293
-str02:  .asciiz  "backward"
+str02:  .asciiz  "backward" #this is to test how data comments are handled
 val02:  .word    -839293
 str03:  .asciiz  "to"
 val03:  .word    903923
@@ -26,9 +26,9 @@ main:
          add $t3, $s0, $s1
 #        la    $t0, val01
 #        la    $t1, val02
-#        la    $t2, val03
+         la    $t2, val03
 #
-#        lw    $s0, 0($t0)
+         lw    $s0, 0($t0)
 #        lw    $s1, 4($t1)
          
 #        sw    $s0, -40($t3)

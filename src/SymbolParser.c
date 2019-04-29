@@ -134,6 +134,7 @@ Symbol* parseTextSymbols(FILE* f, Symbol* tail)
                free(label);
                free(type);
             }
+            //printSymbol(cur);
          }
       }
 
@@ -182,13 +183,13 @@ Symbol* parseDataSymbols(FILE* f, Symbol* tail)
             cur = initSymbol(label, type, data, address, dataAddr);
             //printf("\t%s\n", data);
             makeDataRaw(cur);
-            //printf("%X %d %x\n", dataAddr, cur->size, cur->size*4);
+            printf("%X %d %x\n", dataAddr, cur->size, cur->size*4);
             dataAddr += (cur->size)*4;
             
             tail->next = cur;
             tail = cur;
             //printf("%s", buf);
-            //printSymbol(cur);
+            printSymbol(cur);
          }
       } 
       free(temp);

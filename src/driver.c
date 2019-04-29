@@ -90,9 +90,6 @@ int main(int argc, char** argv)
    }
    else
    {
-      printf("Replacing Pseudo...\n");
-      replacePseudo(clean);
-
       printf("Rewriting symbols...\n");
       replaceSymbols(clean, res);
       
@@ -103,8 +100,8 @@ int main(int argc, char** argv)
       printf("Writing symbols...\n");  
       writeSymbols(out, res); 
       fclose(repfile);
-      //Symbol* temp = res->next;
-      /*while(temp != NULL)
+      /*Symbol* temp = res->next;
+      while(temp != NULL)
       {
          printSymbol(temp);
          printf("\n");
