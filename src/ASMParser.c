@@ -36,7 +36,7 @@ static char* findOpcode(char* inst);
 static char* findFunct(char* inst);
 static ParseResult* parseRType(const char* const pASM);
 static ParseResult* parseIType(const char* const pASM);
-static ParseResult* parsePseudo(const char* const pASM);
+static ParseResult* parseJump(const char* const pASM);
 static char* toBinary(int num, int size); 
 
 static char* registerTable[NUM_REGISTERS] = {
@@ -70,9 +70,7 @@ static MIPSInstruction mipsTable[NUM_INSTRUCTIONS] = {
 {"bne",    "000101",   NULL  , true  },
 {"j",      "000010",   NULL  , true  },
 {"syscall","000000", "001100", false },
-{"addiu",  "001001",   NULL  , false },
-{"la",     "001000",   NULL  , true } };
-
+{"addiu",  "001001",   NULL  , false } };
 
 /** Breaks up given the MIPS32 assembly instruction and creates a proper
  * ParseResult object storing information about that instruction.
@@ -107,6 +105,10 @@ ParseResult* parseASM(const char* const pASM) {
 	{
 		return parseRType(pASM);
 	}
+   else if(strcmp(opcode, "000010") == 0)
+   {
+      return parseJump(pASM);
+   }
 	else 
 	{
 		return parseIType(pASM);
@@ -334,6 +336,20 @@ static ParseResult* parseIType(const char* const pASM)
 		free(arg2);
       free(temp);
 	}
+   else if(strcmp(mnem, "blez") == 0 || strcmp(mnem, "bgtz") == 0)
+   {
+		sscanf(res->ASMInstruction, "%*3s %*4s %"SCNd16"", &imm);
+		
+		res->Imm = imm;
+		char* immBin = toBinary(imm, 16);
+		strcpy(res->IMM, immBin);
+		free(immBin);
+		
+		res->rt = 0;
+		res->RT = calloc(7, sizeof(char));
+		strcpy(res->RT, "00000");
+
+   }
    else
    {
 	   char* arg2 = calloc(5,sizeof(char));
@@ -377,9 +393,42 @@ static ParseResult* parseIType(const char* const pASM)
 	return res;
 }
 
-static ParseResult* parsePseudo(const char* const pASM)
+static ParseResult* parseJump(const char* const pASM)
 {
-   return NULL;  
+	ParseResult* res = malloc(sizeof(ParseResult));
+
+	res->ASMInstruction = calloc(50, sizeof(char));
+   strcpy(res->ASMInstruction, pASM);
+	char* mnem = calloc(6,sizeof(char));
+	char* target = calloc(27,sizeof(char));
+	int32_t imm = 0;
+	sscanf(pASM, "%s %s ", mnem, target);
+   printf("\t%s\n", target);
+
+	//Set all fields to default unused value, then fill in the fields that we use as
+	//we go along, thus in the end only the unused fields will still have the default value
+	res->Mnemonic = calloc(6, sizeof(char));
+	res->rdName = NULL;
+	res->rsName = NULL;
+	res->rtName = calloc(6, sizeof(char));
+	res->Imm = 0;
+	res->rd = 255;
+	res->rs = 255;
+	res->rt = 255;
+   res->shamt = 255;
+	res->Opcode = calloc(7, sizeof(char));
+	res->Funct = NULL;
+   res->Shamt = NULL;
+	res->RD = NULL;
+	res->RS = NULL;
+	res->RT = calloc(6, sizeof(char));
+	res->IMM = calloc(17, sizeof(char));
+   res->Machine = calloc(33, sizeof(char));
+
+	strcpy(res->Mnemonic, mnem);
+	strcpy(res->Opcode, findOpcode(mnem));
+
+   return res;
 }
 
 
@@ -455,6 +504,11 @@ bool isInstruction(char* s)
 	for(int i = 0; i < NUM_INSTRUCTIONS; i++)
 	{
 		char* cur = (*(mipsTable+i)).mnemonic;
+      printf("%s %s\n", s, cur);
+      if(!cur)
+      {
+         return false;
+      }
 		if(strcmp(s, cur) == 0)
 		{
 			return true;

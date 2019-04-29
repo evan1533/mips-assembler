@@ -125,6 +125,7 @@ void replaceSymbols(FILE* f, Symbol* sym)
       }
       if(parsing)
       {
+         printf("%s\n", temp);
          if(isInstruction(temp))
          {
             curAddr+=4;
@@ -168,6 +169,11 @@ void replaceSymbols(FILE* f, Symbol* sym)
                   fprintf(out, "%s", buf);
                }
             }
+            else if(strcmp(temp, "j") == 0)
+            {
+               printf("HEREE\n");
+               printf("%s\n", buf);
+            }
             else
             {
                char mnem[8];
@@ -184,6 +190,7 @@ void replaceSymbols(FILE* f, Symbol* sym)
          }
          else
          {
+            printf("HERE\n");
             fprintf(out, "%s", buf);
          }
 
