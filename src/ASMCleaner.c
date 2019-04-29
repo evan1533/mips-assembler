@@ -44,6 +44,7 @@ void removeComments(FILE* f)
          if(blankLine && !isspace(buf[i]))
          {
             blankLine = false;
+            printf("Not blank: %s\n", buf);
          }
          
          if( writing && !blankLine )
