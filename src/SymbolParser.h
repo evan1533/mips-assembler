@@ -11,6 +11,8 @@ struct _Symbol {
    int address;
    int size;
    char* data;
+   int dataLength;
+   int lastRowLength;
    char* raw;
    struct _Symbol* next;
 };
