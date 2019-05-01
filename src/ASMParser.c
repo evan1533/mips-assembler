@@ -97,7 +97,7 @@ ParseResult* parseASM(const char* const pASM) {
 	strcpy(temp, pASM);
 	sscanf(temp,"%s", mnem);
 	char* opcode = findOpcode(mnem);
-   //printf("\t%s\n", mnem); 
+   printf("%s\n", pASM); 
    free(mnem);
    free(temp);
 
@@ -159,6 +159,30 @@ static ParseResult* parseRType(const char* const pASM)
       strcpy(res->RT, "00000");
       strcpy(res->RD, "00000");
    }
+   else if( strncmp(mnem, "sll", 3) == 0)
+   {
+      strcpy(res->Mnemonic, mnem);
+      strcpy(res->Opcode, findOpcode(mnem));
+      strcpy(res->Funct, findFunct(mnem));
+      strcpy(res->rdName, arg1);
+      strcpy(res->rtName, arg2);
+      res->rd = findRegister(arg1);
+      res->rt = findRegister(arg2);
+
+      char* shamBin = toBinary(atoi(arg3), 5);
+      strncpy(res->Shamt, shamBin, 5);
+      printf("\t %d %d %d\n", res->rs, res->rt, res->rd);
+	
+      char* rdBin = toBinary(res->rd, 5);
+      strcpy(res->RD, rdBin);
+      free(rdBin);
+
+      strcpy(res->RS, "00000");
+
+      char* rtBin = toBinary(res->rt, 5);
+      strcpy(res->RT, rtBin);
+      free(rtBin);
+   }
    else
    {
       strcpy(res->Mnemonic, mnem);
@@ -171,7 +195,6 @@ static ParseResult* parseRType(const char* const pASM)
       res->rd = findRegister(arg1);
       res->rs = findRegister(arg2);
       res->rt = findRegister(arg3);
-   
 	
       char* rdBin = toBinary(res->rd, 5);
       strcpy(res->RD, rdBin);
@@ -338,16 +361,23 @@ static ParseResult* parseIType(const char* const pASM)
 	}
    else if(strcmp(mnem, "blez") == 0 || strcmp(mnem, "bgtz") == 0)
    {
-		sscanf(res->ASMInstruction, "%*3s %*4s %"SCNd16"", &imm);
+		sscanf(res->ASMInstruction, "%*4s %*4s %"SCNd16"", &imm);
 		
 		res->Imm = imm;
 		char* immBin = toBinary(imm, 16);
 		strcpy(res->IMM, immBin);
 		free(immBin);
 		
+      res->rsName = calloc(7, sizeof(char));
+		strncpy(res->rsName, res->rtName, 5);
+		res->rs = res->rt;
+      res->RS = calloc(6, sizeof(char));
+      strncpy(res->RS, res->RT, 5);
+
 		res->rt = 0;
-		res->RT = calloc(7, sizeof(char));
 		strcpy(res->RT, "00000");
+
+      printf("%s %s %s\n", mnem, res->RT, res->IMM);
 
    }
    else
@@ -356,7 +386,7 @@ static ParseResult* parseIType(const char* const pASM)
       char* temp = calloc(55, sizeof(char));
       strcpy(temp, pASM);
 		sscanf(temp, "%*s %*s %s %"SCNd16"", arg2, &imm);
-      printf("%s\n", temp);
+      printf("INST: %s\n", temp);
       arg2 = strtok(arg2, ",");
 
 		res->rsName = calloc(5, sizeof(char));
@@ -401,16 +431,15 @@ static ParseResult* parseJump(const char* const pASM)
    strcpy(res->ASMInstruction, pASM);
 	char* mnem = calloc(6,sizeof(char));
 	char* target = calloc(27,sizeof(char));
-	int32_t imm = 0;
 	sscanf(pASM, "%s %s ", mnem, target);
-   printf("\t%s\n", target);
+   printf("\t%s %s\n", mnem, target);
 
 	//Set all fields to default unused value, then fill in the fields that we use as
 	//we go along, thus in the end only the unused fields will still have the default value
 	res->Mnemonic = calloc(6, sizeof(char));
 	res->rdName = NULL;
 	res->rsName = NULL;
-	res->rtName = calloc(6, sizeof(char));
+	res->rtName = NULL;
 	res->Imm = 0;
 	res->rd = 255;
 	res->rs = 255;
@@ -421,12 +450,25 @@ static ParseResult* parseJump(const char* const pASM)
    res->Shamt = NULL;
 	res->RD = NULL;
 	res->RS = NULL;
-	res->RT = calloc(6, sizeof(char));
-	res->IMM = calloc(17, sizeof(char));
+	res->RT = NULL;
+	res->IMM = NULL;
    res->Machine = calloc(33, sizeof(char));
 
 	strcpy(res->Mnemonic, mnem);
 	strcpy(res->Opcode, findOpcode(mnem));
+
+   char* targetBin = toBinary(atoi(target), 26);
+
+   //Build the machine code instruction
+   char* machine = calloc(33, sizeof(char));
+   strncat(machine, res->Opcode, 6);
+   strncat(machine, targetBin, 26);
+
+   strncpy(res->Machine, machine, 32);
+
+   free(machine);
+	free(mnem);
+	free(target);
 
    return res;
 }
@@ -504,15 +546,13 @@ bool isInstruction(char* s)
 	for(int i = 0; i < NUM_INSTRUCTIONS; i++)
 	{
 		char* cur = (*(mipsTable+i)).mnemonic;
-      printf("%s %s\n", s, cur);
-      if(!cur)
+      if(cur)
       {
-         return false;
+         if(strcmp(s, cur) == 0)
+         {
+            return true;
+         }
       }
-		if(strcmp(s, cur) == 0)
-		{
-			return true;
-		}
 	}
 	return false;
 }
@@ -521,11 +561,16 @@ bool isLabelInstruction(char* s)
 {
    for(int i = 0; i < NUM_INSTRUCTIONS; i++)
 	{
-		MIPSInstruction cur = (*(mipsTable+i));
-		if(strcmp(s, cur.mnemonic) == 0)
-		{
-			return cur.hasLabel;
-		}
+		char* cur = (*(mipsTable+i)).mnemonic;
+      bool curHasLabel = (*(mipsTable+i)).hasLabel;
+
+      if(cur)
+      {
+         if(strcmp(s, cur) == 0)
+         {
+            return curHasLabel;
+         }
+      }
 	}
 
    return false;

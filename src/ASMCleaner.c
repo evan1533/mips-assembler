@@ -56,6 +56,10 @@ void removeComments(FILE* f)
                free(arg1);
                free(arg2);
             }
+            else if( strncmp(firstWord, "nop", 3) == 0)
+            {
+               fprintf(out, "\t sll $zero, $zero, 0\n");
+            }
             else {
                fputs(buf, out);
             }
@@ -126,11 +130,6 @@ void replaceSymbols(FILE* f, Symbol* sym)
       if(parsing)
       {
          printf("%s\n", temp);
-         if(isInstruction(temp))
-         {
-            curAddr+=4;
-            printf("T: %s -> %d\n", temp, curAddr);
-         }
          if(isLabelInstruction(temp))
          {
             if( strcmp(temp, "beq") == 0 || strcmp(temp, "bne") == 0)
@@ -171,8 +170,19 @@ void replaceSymbols(FILE* f, Symbol* sym)
             }
             else if(strcmp(temp, "j") == 0)
             {
-               printf("HEREE\n");
-               printf("%s\n", buf);
+               char mnem[8];
+               char label[33];
+               //printf("\tLABL: %s\n", temp);
+               sscanf(buf, "%s %s", mnem, label);
+               //reg1 = strtok(reg1, ",");
+               //reg2 = strtok(reg2, ",");
+               Symbol* tempSym = getSymbol(label, sym);
+               printSymbol(tempSym);
+               int relativeAddr = (tempSym->address - curAddr)/4;
+               printf("\t%s %s %d %d %d\n",mnem, label, curAddr, tempSym->address, relativeAddr);
+               fprintf(out, "\t%s %d\n", mnem, relativeAddr);
+
+               printf("\t%s %d\n", mnem, relativeAddr);
             }
             else
             {
@@ -187,11 +197,16 @@ void replaceSymbols(FILE* f, Symbol* sym)
                //Output the machine instruction
                //printf("%s", buf);
             }
+
          }
          else
          {
-            printf("HERE\n");
             fprintf(out, "%s", buf);
+         }
+
+         if(isInstruction(temp))
+         {
+            curAddr+=4;
          }
 
       }

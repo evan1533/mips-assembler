@@ -1,0 +1,23 @@
+.data
+num01:  .word  3029391
+.text
+main:
+	j 2
+loop1:
+        andi  $s0, $s1, 6165
+tst1:
+	 beq $t0, $t1, -1
+	 blez $t0, 44
+	j 6
+loop2:
+        slti  $s6, $s7, -199
+	 sll $zero, $zero, 0
+	j 2
+loop3:
+        lui   $t0, 4095
+tst3:
+	 bgtz $s6, 32
+tst2:
+	 bne $t2, $t3, -5
+end:
+	j -11

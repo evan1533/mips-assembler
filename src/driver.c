@@ -144,7 +144,7 @@ void parseInstructions(FILE* f, FILE* out, Symbol* sym)
             ParseResult* res = parseASM(buf);
             //Output the machine instruction
             fprintf(out, "%s\n", res->Machine);
-            //printf("\t%s %s\n", res->Mnemonic, res->Machine);
+            printf("\t%s %s\n", res->Mnemonic, res->Machine);
             clearResult(res);
             free(res);
          }
