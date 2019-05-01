@@ -2,14 +2,15 @@
 #define SYMBOLPARSER_H
 #include <inttypes.h>
 
-typedef enum {WORD, ASCIIZ} DataType;
+typedef enum {WORD, ASCIIZ, TEXT} SymbolType;
 
 struct _Symbol {
    char* Label;
-   char* Type;
+   SymbolType Type;
    char* Address;
    int address;
    int size;
+   int numRows;
    char* data;
    int dataLength;
    int lastRowLength;

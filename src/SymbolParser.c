@@ -8,9 +8,9 @@
  
 #define BASE_ADDRESS 0x0000200
 
-Symbol* initSymbol(char* pLabel, char* pType, char* pData, char* pAddress, int addr);
+Symbol* initSymbol(char* pLabel, SymbolType pType, char* pData, char* pAddress, int addr);
 char* stripData(char* const buf);
-void makeDataRaw(Symbol* sym);
+void makeDataRaw(Symbol* sym, Symbol* prev);
 static char* toBinary(int num, int size);
 Symbol* parseDataSymbols(FILE* f, Symbol* tail);
 Symbol* parseTextSymbols(FILE* f, Symbol* tail);
@@ -22,7 +22,6 @@ void cleanSymbols(Symbol* sym)
       Symbol* next = sym->next;
       sym->size = 0;
       free(sym->Label);
-      free(sym->Type);
       free(sym->data);
       free(sym->raw);
       free(sym->Address);
@@ -31,7 +30,7 @@ void cleanSymbols(Symbol* sym)
    }
 }
 
-Symbol* initSymbol(char* pLabel, char* pType, char* pData, char* pAddress, int addr)
+Symbol* initSymbol(char* pLabel, SymbolType pType, char* pData, char* pAddress, int addr)
 {
    Symbol* res = calloc(1, sizeof(Symbol));
    /*res->Label = calloc(50, sizeof(char));
@@ -43,6 +42,7 @@ Symbol* initSymbol(char* pLabel, char* pType, char* pData, char* pAddress, int a
    res->Address = pAddress;
    res->address = addr;
    res->size = 0;
+   res->numRows = 0;
    res->dataLength = 0;
    res->lastRowLength = 0;
    res->raw = NULL;
@@ -64,10 +64,10 @@ Symbol* parseSymbols(FILE* f)
    strcpy(head->Label, "HEAD");
    rewind(f);
    
-   printf("\tParsing data symbols...\n");
+   printf("\n\tParsing data symbols...\n");
    tail = parseDataSymbols(f, tail);
    
-   printf("\tParsing text symbols...\n");
+   printf("\n\tParsing text symbols...\n");
    tail = parseTextSymbols(f, tail);
 
   /* Symbol* temp = head;
@@ -113,8 +113,6 @@ Symbol* parseTextSymbols(FILE* f, Symbol* tail)
          {
             Symbol* cur;
             char* label = calloc(50, sizeof(char));
-            char* type = calloc(9, sizeof(char));
-            strcpy(type, ".text");
             //printf("\tScanning label...\n");
             sscanf(buf, "%s", label);
    
@@ -124,7 +122,8 @@ Symbol* parseTextSymbols(FILE* f, Symbol* tail)
                //printf("\tLBL: %s\n", label);
                char* address = toBinary(textAddr, 32);
                label = strtok(label, ":");
-               cur = initSymbol(label, type, NULL, address, textAddr);
+
+               cur = initSymbol(label, TEXT, NULL, address, textAddr);
                tail->next = cur;
                tail = cur;
                //printf("%s", buf);
@@ -134,7 +133,6 @@ Symbol* parseTextSymbols(FILE* f, Symbol* tail)
                //printf("\t%X -> %s\n", textAddr, buf);
                textAddr+=4;
                free(label);
-               free(type);
             }
             //printSymbol(cur);
          }
@@ -152,7 +150,8 @@ Symbol* parseDataSymbols(FILE* f, Symbol* tail)
    bool dataParsing = false;
    rewind(f);
    char buf[555];
-   
+   int lastRowLen = 0;
+
    while(fgets(buf, 555, f))
    { 
       char* temp = calloc(100, sizeof(char));
@@ -177,29 +176,55 @@ Symbol* parseDataSymbols(FILE* f, Symbol* tail)
             char* label = calloc(50, sizeof(char));
             char* type = calloc(9, sizeof(char));
             char* data;
-            char* address = toBinary(dataAddr, 32);
             
             sscanf(buf, "%s %s", label, type);
             data = stripData(buf);
             label = strtok(label, ":");
-            cur = initSymbol(label, type, data, address, dataAddr);
+            SymbolType symType;
+            if(strcmp(type, ".asciiz") == 0)
+            {
+               symType = ASCIIZ;
+            }
+            else if(strcmp(type, ".word") == 0)
+            {
+               symType = WORD;
+            }
+            else if(strcmp(type, ".text") == 0)
+            {
+               symType = TEXT;
+            }
+            
+            
+            if(symType == WORD)
+            {
+               printf("B4: %08X\n", dataAddr);
+               while(dataAddr%4 != 0)
+               {
+                  dataAddr++;
+               }
+               printf("AF: %08X\n", dataAddr);
+            }
+            char* address = toBinary(dataAddr, 32);
+         
+            cur = initSymbol(label, symType, data, address, dataAddr);
             //printf("\t%s\n", data);
-            makeDataRaw(cur);
-            printf("%X %d %x\n", dataAddr, cur->size, cur->size*4);
-            dataAddr += (cur->size)*4;
+
+            printf("\tADDR: 0x%08X\n", dataAddr);
+            makeDataRaw(cur, tail);
+            printf("\t%s\n", label);
+            printf("\t%s\n", data);
+            printf("\t0x%x + 0x%x = 0x%x\n\n\n", dataAddr, cur->size, cur->size+dataAddr);
+            dataAddr += (cur->size);
             
             tail->next = cur;
             tail = cur;
             //printf("%s", buf);
-            printSymbol(cur);
+            free(type);
          }
       } 
       free(temp);
    }
 
-   printf("\n\nTail:\n");
-   printSymbol(tail);
-   printf("%d\n", tail->lastRowLength);
    for(int i = tail->lastRowLength; i%4 != 0; i++)
    {
       if(i%4==3)
@@ -242,17 +267,17 @@ char* stripData(char* const buf)
    return res;
 }
 
-void makeDataRaw(Symbol* sym)
+void makeDataRaw(Symbol* sym, Symbol* prev)
 {
    char* raw;// = calloc(32, sizeof(char));
    static int letterNum = 0;
+   int lastRowLength = 0;
 
-   if (strncmp(".asciiz", sym->Type, 7) == 0)
+   if( sym->Type == ASCIIZ)
    {
       char* temp = sym->data;
       int size = strlen(temp)-2;
       sym->dataLength = size;
-      int lastRowLength = 0;
       int rows = 1;
       int expectedLen = ((size*8)/32)+1;
       //rows = (rows == 0) ? 1 : rows;
@@ -261,7 +286,6 @@ void makeDataRaw(Symbol* sym)
       int endIndex = -1;
       for(int i = 1; i < size; i++)
       {
-         printf("%d\n",letterNum);
          letterNum++;
          lastRowLength++;
          char* binRes;
@@ -289,7 +313,7 @@ void makeDataRaw(Symbol* sym)
          }
          endIndex = i;
       }
-      printf("%s\n", raw);
+      //printf("%s\n", raw);
       //Pad the remaining data 
       /*for(int i = endIndex; i % 4 != 0; i++)
       {
@@ -303,10 +327,28 @@ void makeDataRaw(Symbol* sym)
          }
       }*/
       sym->lastRowLength = lastRowLength;
-      sym->size = rows;
+      sym->size = size-1;
+      sym->numRows = rows;
    }
-   else if (strncmp(".word", sym->Type, 5) == 0)
+   else if (sym->Type == WORD)
    {
+      if(prev->lastRowLength != 0)
+      {
+         for(int i = prev->lastRowLength; i%4 != 0; i++)
+         {
+            if(i%4==3)
+            {
+               strcat(prev->raw, "00000000\n");
+            }
+            else
+            {
+               strcat(prev->raw, "00000000");
+            }
+         }
+
+         prev->lastRowLength = 0;
+      }
+
       char* token;
       letterNum = 0;
       int* values = calloc(50, sizeof(int));
@@ -351,7 +393,8 @@ void makeDataRaw(Symbol* sym)
          strcat(raw, "\n");
          free(binRes);
       }
-      sym->size = count;
+      sym->size = (count*4);
+      sym->numRows = count;
       sym->dataLength = count;
       free(temp);
       free(values);
@@ -362,7 +405,7 @@ void makeDataRaw(Symbol* sym)
 
 void printSymbol(Symbol* sym)
 {
-   printf("%s %s %08X -> %s\n%s\n", sym->Label, sym->Type, sym->address, sym->Address, sym->data);//, sym->raw);
+   printf("%s %d %08X -> %s\n%s\n", sym->Label, sym->Type, sym->address, sym->Address, sym->data);//, sym->raw);
 }
 
 static char* toBinary(int num, int size)

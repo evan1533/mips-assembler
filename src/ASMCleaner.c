@@ -44,35 +44,99 @@ void removeComments(FILE* f)
       {
          if(firstWord[0] != '#' && firstWord[0] != '\0')
          {
-            if ( strncmp(firstWord, "la", 2) == 0)
+                  printf("BBB: %s\n", firstWord);
+            if(true)
             {
-               char* arg1 = calloc(33, sizeof(char));
-               char* arg2 = calloc(33, sizeof(char));
-               sscanf(buf, "%*s %s %s", arg1, arg2);
-               printf("\t%s %s %s\n", firstWord, arg1, arg2);
-               
-               fprintf(out, "\t addi %s $zero, %s\n", arg1, arg2);
-               
-               free(arg1);
-               free(arg2);
+
+               printf("\tFAS: %s\n", firstWord);
+               if ( strncmp(firstWord, "la\0", 3) == 0)
+               {
+                  printf("\t\tFAS: %s\n", firstWord);
+                  char* arg1 = calloc(33, sizeof(char));
+                  char* arg2 = calloc(33, sizeof(char));
+                  sscanf(buf, "%*s %s %s", arg1, arg2);
+                  printf("\t%s %s %s\n", firstWord, arg1, arg2);
+                  
+                  fprintf(out, "\t addi %s $zero, %s\n", arg1, arg2);
+                  
+                  free(arg1);
+                  free(arg2);
+               }
+               else if ( strncmp(firstWord, "li", 2) == 0)
+               {
+                  char* arg1 = calloc(33, sizeof(char));
+                  char* arg2 = calloc(33, sizeof(char));
+                  sscanf(buf, "%*s %s %s", arg1, arg2);
+                  printf("\t%s %s %s\n", firstWord, arg1, arg2);
+                  
+                  fprintf(out, "\t addiu %s $zero, %s\n", arg1, arg2);
+                  
+                  free(arg1);
+                  free(arg2);
+               }
+               else if( strncmp(firstWord, "nop", 3) == 0)
+               {
+                  fprintf(out, "\t sll $zero, $zero, 0\n");
+               }
+               else if(strcmp(firstWord, "lw") == 0)
+               {
+                  bool hasLabel = true;
+                  for(int i = 0; i < 256; i++)
+                  {
+                     if(buf[i] == '(')
+                     {
+                        hasLabel = false;
+                     }
+                  }
+                  if(hasLabel)
+                  {
+                     char* reg = calloc(10, sizeof(char));
+                     char* label = calloc(33, sizeof(char));
+                     sscanf(buf, "%*s %s %s", reg, label);
+                     fprintf(out, "\tlw %s %s($zero)\n", reg, label);
+                     free(reg);
+                     free(label);
+                  }
+                  else
+                  {
+                     fputs(buf, out);
+                  }
+               }
+               else if(strcmp(firstWord, "move") == 0)
+               {
+                  char* arg1 = calloc(33, sizeof(char));
+                  char* arg2 = calloc(33, sizeof(char));
+                  sscanf(buf, "%*s %s %s", arg1, arg2);
+                  printf("\t%s %s %s\n", firstWord, arg1, arg2);
+                  
+                  fprintf(out, "\t addu %s $zero, %s\n", arg1, arg2);
+                  
+                  free(arg1);
+                  free(arg2);
+
+               }
+               else if(strcmp(firstWord, "blt") == 0)
+               {
+                  //slt $at, $rs, $rt
+                  //bne $at, $zero, offset
+                  char rs[33];
+                  char rt[33];
+                  char offset[33];
+                  sscanf(buf, "%*s %s %s %s", rs, rt, offset);
+                  printf("\t%s %s %s\n", firstWord, rs, rt);
+                  
+                  strtok(rt, ",");
+                  fprintf(out, "\t slt $at, %s %s\n", rs, rt);
+                  fprintf(out, "\t bne $at, $zero, %s\n", offset);
+
+               }
+               else 
+               {
+                  fputs(buf, out);
+               }
             }
-            if ( strncmp(firstWord, "li", 2) == 0)
+            else 
             {
-               char* arg1 = calloc(33, sizeof(char));
-               char* arg2 = calloc(33, sizeof(char));
-               sscanf(buf, "%*s %s %s", arg1, arg2);
-               printf("\t%s %s %s\n", firstWord, arg1, arg2);
-               
-               fprintf(out, "\t addiu %s $zero, %s\n", arg1, arg2);
-               
-               free(arg1);
-               free(arg2);
-            }
-            else if( strncmp(firstWord, "nop", 3) == 0)
-            {
-               fprintf(out, "\t sll $zero, $zero, 0\n");
-            }
-            else {
                fputs(buf, out);
             }
          }
@@ -209,6 +273,29 @@ void replaceSymbols(FILE* f, Symbol* sym)
                fprintf(out, "\t%s %d\n", mnem, (tempSym->address)>>2);
 
                printf("\t%s %d\n", mnem, (tempSym->address)>>2);
+            }
+            else if(strcmp(temp, "lw") == 0)
+            {
+               char mnem[8];
+               char reg1[8];
+               char offs[64];
+               //printf("\tLABL: %s\n", temp);
+               sscanf(buf, "%s %s %s", mnem, reg1, offs);
+               //reg1 = strtok(reg1, ",");
+               //reg2 = strtok(reg2, ",");
+               char* label = strtok(offs, "(");
+               char* offset = strtok(NULL, ")");
+               printf("GGG: %s %s\n", label, offset);
+               int lblAddr = getLabelAddress(label, sym);
+               if(lblAddr != -1)
+               {
+                  printf("\t %s %s %d(%s)\n", mnem, reg1, lblAddr, offset);
+                  fprintf(out, "\t %s %s %d(%s)\n", mnem, reg1, lblAddr, offset);
+               }
+               else
+               {
+                  fprintf(out, "%s", buf);
+               }
             }
             else
             {
