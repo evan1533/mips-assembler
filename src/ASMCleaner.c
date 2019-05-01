@@ -56,6 +56,18 @@ void removeComments(FILE* f)
                free(arg1);
                free(arg2);
             }
+            if ( strncmp(firstWord, "li", 2) == 0)
+            {
+               char* arg1 = calloc(33, sizeof(char));
+               char* arg2 = calloc(33, sizeof(char));
+               sscanf(buf, "%*s %s %s", arg1, arg2);
+               printf("\t%s %s %s\n", firstWord, arg1, arg2);
+               
+               fprintf(out, "\t addiu %s $zero, %s\n", arg1, arg2);
+               
+               free(arg1);
+               free(arg2);
+            }
             else if( strncmp(firstWord, "nop", 3) == 0)
             {
                fprintf(out, "\t sll $zero, $zero, 0\n");
@@ -143,9 +155,23 @@ void replaceSymbols(FILE* f, Symbol* sym)
                //reg1 = strtok(reg1, ",");
                //reg2 = strtok(reg2, ",");
                Symbol* tempSym = getSymbol(label, sym);
-               int relativeAddr = (tempSym->address - curAddr)/4;
-               //printf("\t%s %s %d %d\n",mnem, label, curAddr, relativeAddr);
+               int relativeAddr = (tempSym->address - (curAddr+4))/4;
+               printf("\t%s %s %d %d %d\n",mnem, label, curAddr, tempSym->address, relativeAddr);
                fprintf(out, "\t %s %s %s %d\n", mnem, reg1, reg2, relativeAddr);
+            }
+            else if( strcmp(temp, "blez") == 0 || strcmp(temp, "bgtz") == 0)
+            {
+               char mnem[8];
+               char reg1[8];
+               char label[33];
+               //printf("\tLABL: %s\n", temp);
+               sscanf(buf, "%s %s %s", mnem, reg1, label);
+               //reg1 = strtok(reg1, ",");
+               //reg2 = strtok(reg2, ",");
+               Symbol* tempSym = getSymbol(label, sym);
+               int relativeAddr = (tempSym->address - (curAddr+4))/4;
+               printf("\t%s %s %d %d %d\n",mnem, label, curAddr, tempSym->address, relativeAddr);
+               fprintf(out, "\t %s %s %d\n", mnem, reg1, relativeAddr);
             }
             else if( strcmp(temp, "addi") == 0)
             {
@@ -178,11 +204,11 @@ void replaceSymbols(FILE* f, Symbol* sym)
                //reg2 = strtok(reg2, ",");
                Symbol* tempSym = getSymbol(label, sym);
                printSymbol(tempSym);
-               int relativeAddr = (tempSym->address - curAddr)/4;
-               printf("\t%s %s %d %d %d\n",mnem, label, curAddr, tempSym->address, relativeAddr);
-               fprintf(out, "\t%s %d\n", mnem, relativeAddr);
+               
+               printf("\t%s %s %d %d\n",mnem, label, curAddr, (tempSym->address)>>2);
+               fprintf(out, "\t%s %d\n", mnem, (tempSym->address)>>2);
 
-               printf("\t%s %d\n", mnem, relativeAddr);
+               printf("\t%s %d\n", mnem, (tempSym->address)>>2);
             }
             else
             {

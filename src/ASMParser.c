@@ -159,7 +159,7 @@ static ParseResult* parseRType(const char* const pASM)
       strcpy(res->RT, "00000");
       strcpy(res->RD, "00000");
    }
-   else if( strncmp(mnem, "sll", 3) == 0)
+   else if( strncmp(mnem, "sll", 3) == 0 || strncmp(mnem, "sra ", 4) == 0)
    {
       strcpy(res->Mnemonic, mnem);
       strcpy(res->Opcode, findOpcode(mnem));
@@ -178,6 +178,35 @@ static ParseResult* parseRType(const char* const pASM)
       free(rdBin);
 
       strcpy(res->RS, "00000");
+
+      char* rtBin = toBinary(res->rt, 5);
+      strcpy(res->RT, rtBin);
+      free(rtBin);
+   }
+   else if( strncmp(mnem, "srav", 4) == 0 )
+   {
+      strcpy(res->Mnemonic, mnem);
+      strcpy(res->Opcode, findOpcode(mnem));
+      strcpy(res->Funct, findFunct(mnem));
+      strcpy(res->rdName, arg1);
+      strcpy(res->rtName, arg2);
+      strcpy(res->rsName, arg3);
+      res->rd = findRegister(arg1);
+      res->rt = findRegister(arg2);
+      res->rs = findRegister(arg3);
+
+      strcpy(res->Shamt, "00000");
+      
+      printf("\t %s %s %s\n", arg1, arg2, arg3);
+      printf("\t %d %d %d\n", res->rs, res->rt, res->rd);
+	
+      char* rdBin = toBinary(res->rd, 5);
+      strcpy(res->RD, rdBin);
+      free(rdBin);
+
+      char* rsBin = toBinary(res->rs, 5);
+      strcpy(res->RS, rsBin);
+      free(rsBin);
 
       char* rtBin = toBinary(res->rt, 5);
       strcpy(res->RT, rtBin);

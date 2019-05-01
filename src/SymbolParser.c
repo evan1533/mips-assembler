@@ -261,7 +261,7 @@ void makeDataRaw(Symbol* sym)
          endIndex = i;
       }
       //Pad the remaining data 
-      for(int i = endIndex; i % 4 != 0; i++)
+      /*for(int i = endIndex; i % 4 != 0; i++)
       {
          if(i%4==3)
          {
@@ -271,7 +271,7 @@ void makeDataRaw(Symbol* sym)
          {
             strcat(raw, "00000000");
          }
-      }
+      }*/
       sym->size = rows;
    }
    else if (strncmp(".word", sym->Type, 5) == 0)
