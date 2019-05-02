@@ -91,14 +91,14 @@ int main(int argc, char** argv)
    }
    else
    {
-      printf("\nRewriting symbols...\n");
+      printf("Rewriting symbols...\n");
       replaceSymbols(clean, res);
       
-      printf("\nParsing instructions...\n");
+      printf("Parsing instructions...\n");
       FILE* repfile = fopen("symreplaced.txt", "r");
       parseInstructions(repfile, out, res);
       
-      printf("\nWriting symbols...\n");  
+      printf("Writing symbols...\n");  
       writeSymbols(out, res); 
       fclose(repfile);
       /*Symbol* temp = res->next;
@@ -111,7 +111,7 @@ int main(int argc, char** argv)
    }
 
    fclose(clean); 
-   printf("\nFreeing symbol list...\n");
+   printf("Freeing symbol list...\n");
    cleanSymbols(res);
    fclose(out);
    printf("Done!\n");
@@ -145,7 +145,7 @@ void parseInstructions(FILE* f, FILE* out, Symbol* sym)
             ParseResult* res = parseASM(buf);
             //Output the machine instruction
             fprintf(out, "%s\n", res->Machine);
-            printf("\t%s %s\n", res->Mnemonic, res->Machine);
+            //printf("\t%s %s\n", res->Mnemonic, res->Machine);
             clearResult(res);
             free(res);
          }
@@ -175,7 +175,7 @@ void writeSymbols(FILE* out, Symbol* sym)
    {
       if(temp->Type != TEXT)
       {
-         printSymbol(temp);
+         //printSymbol(temp);
          if(temp->raw)
          {
             fprintf(out, "%s", temp->raw);

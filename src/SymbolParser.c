@@ -64,10 +64,10 @@ Symbol* parseSymbols(FILE* f)
    strcpy(head->Label, "HEAD");
    rewind(f);
    
-   printf("\n\tParsing data symbols...\n");
+   printf("\tParsing data symbols...\n");
    tail = parseDataSymbols(f, tail);
    
-   printf("\n\tParsing text symbols...\n");
+   printf("\tParsing text symbols...\n");
    tail = parseTextSymbols(f, tail);
 
   /* Symbol* temp = head;
@@ -150,7 +150,6 @@ Symbol* parseDataSymbols(FILE* f, Symbol* tail)
    bool dataParsing = false;
    rewind(f);
    char buf[555];
-   int lastRowLen = 0;
 
    while(fgets(buf, 555, f))
    { 
@@ -197,23 +196,23 @@ Symbol* parseDataSymbols(FILE* f, Symbol* tail)
             
             if(symType == WORD)
             {
-               printf("B4: %08X\n", dataAddr);
+               //printf("B4: %08X\n", dataAddr);
                while(dataAddr%4 != 0)
                {
                   dataAddr++;
                }
-               printf("AF: %08X\n", dataAddr);
+               //printf("AF: %08X\n", dataAddr);
             }
             char* address = toBinary(dataAddr, 32);
          
             cur = initSymbol(label, symType, data, address, dataAddr);
             //printf("\t%s\n", data);
 
-            printf("\tADDR: 0x%08X\n", dataAddr);
+            //printf("\tADDR: 0x%08X\n", dataAddr);
             makeDataRaw(cur, tail);
-            printf("\t%s\n", label);
-            printf("\t%s\n", data);
-            printf("\t0x%x + 0x%x = 0x%x\n\n\n", dataAddr, cur->size, cur->size+dataAddr);
+            //printf("\t%s\n", label);
+            //printf("\t%s\n", data);
+            //printf("\t0x%x + 0x%x = 0x%x\n\n\n", dataAddr, cur->size, cur->size+dataAddr);
             dataAddr += (cur->size);
             
             tail->next = cur;
@@ -283,7 +282,7 @@ void makeDataRaw(Symbol* sym, Symbol* prev)
       //rows = (rows == 0) ? 1 : rows;
       int rawlength = (expectedLen*33)+1;
       raw = calloc(rawlength, sizeof(char));
-      int endIndex = -1;
+      //int endIndex = -1;
       for(int i = 1; i < size; i++)
       {
          letterNum++;
@@ -311,7 +310,7 @@ void makeDataRaw(Symbol* sym, Symbol* prev)
             rows++;
             lastRowLength = 0;
          }
-         endIndex = i;
+         //endIndex = i;
       }
       //printf("%s\n", raw);
       //Pad the remaining data 

@@ -45,18 +45,18 @@ void removeComments(FILE* f)
       {
          if(firstWord[0] != '#' && firstWord[0] != '\0')
          {
-                  printf("BBB: %s\n", firstWord);
+                  //printf("BBB: %s\n", firstWord);
             if(true)
             {
 
-               printf("\tFAS: %s\n", firstWord);
+               //printf("\tFAS: %s\n", firstWord);
                if ( strncmp(firstWord, "la\0", 3) == 0)
                {
-                  printf("\t\tFAS: %s\n", firstWord);
+                  //printf("\t\tFAS: %s\n", firstWord);
                   char* arg1 = calloc(33, sizeof(char));
                   char* arg2 = calloc(33, sizeof(char));
                   sscanf(buf, "%*s %s %s", arg1, arg2);
-                  printf("\t%s %s %s\n", firstWord, arg1, arg2);
+                  //printf("\t%s %s %s\n", firstWord, arg1, arg2);
                   
                   fprintf(out, "\t addi %s $zero, %s\n", arg1, arg2);
                   
@@ -68,7 +68,7 @@ void removeComments(FILE* f)
                   char* arg1 = calloc(33, sizeof(char));
                   char* arg2 = calloc(33, sizeof(char));
                   sscanf(buf, "%*s %s %s", arg1, arg2);
-                  printf("\t%s %s %s\n", firstWord, arg1, arg2);
+                  //printf("\t%s %s %s\n", firstWord, arg1, arg2);
                   
                   fprintf(out, "\t addiu %s $zero, %s\n", arg1, arg2);
                   
@@ -113,7 +113,7 @@ void removeComments(FILE* f)
                   char* arg1 = calloc(33, sizeof(char));
                   char* arg2 = calloc(33, sizeof(char));
                   sscanf(buf, "%*s %s %s", arg1, arg2);
-                  printf("\t%s %s %s\n", firstWord, arg1, arg2);
+                  ////printf("\t%s %s %s\n", firstWord, arg1, arg2);
                   
                   fprintf(out, "\t addu %s $zero, %s\n", arg1, arg2);
                   
@@ -129,7 +129,7 @@ void removeComments(FILE* f)
                   char rt[33];
                   char offset[33];
                   sscanf(buf, "%*s %s %s %s", rs, rt, offset);
-                  printf("\t%s %s %s\n", firstWord, rs, rt);
+                  //printf("\t%s %s %s\n", firstWord, rs, rt);
                   
                   strtok(rt, ",");
                   fprintf(out, "\t slt $at, %s %s\n", rs, rt);
@@ -174,7 +174,7 @@ void removeComments(FILE* f)
             if(blankLine && !isspace(buf[i]))
             {
                blankLine = false;
-               printf("Not blank: %s\n", buf);
+               //printf("Not blank: %s\n", buf);
             }
             
             if( writing && !blankLine )
@@ -213,7 +213,7 @@ void replaceSymbols(FILE* f, Symbol* sym)
       }
       if(parsing)
       {
-         printf("%s\n", temp);
+         //printf("%s\n", temp);
          if(isLabelInstruction(temp))
          {
             if( strcmp(temp, "beq") == 0 || strcmp(temp, "bne") == 0)
@@ -223,12 +223,13 @@ void replaceSymbols(FILE* f, Symbol* sym)
                char reg2[8];
                char label[33];
                //printf("\tLABL: %s\n", temp);
+
                sscanf(buf, "%s %s %s %s", mnem, reg1, reg2, label);
                //reg1 = strtok(reg1, ",");
                //reg2 = strtok(reg2, ",");
                Symbol* tempSym = getSymbol(label, sym);
                int relativeAddr = (tempSym->address - (curAddr+4))/4;
-               printf("\t%s %s %d %d %d\n",mnem, label, curAddr, tempSym->address, relativeAddr);
+               //printf("\t%s %s %d %d %d\n",mnem, label, curAddr, tempSym->address, relativeAddr);
                fprintf(out, "\t %s %s %s %d\n", mnem, reg1, reg2, relativeAddr);
             }
             else if( strcmp(temp, "blez") == 0 || strcmp(temp, "bgtz") == 0)
@@ -242,7 +243,7 @@ void replaceSymbols(FILE* f, Symbol* sym)
                //reg2 = strtok(reg2, ",");
                Symbol* tempSym = getSymbol(label, sym);
                int relativeAddr = (tempSym->address - (curAddr+4))/4;
-               printf("\t%s %s %d %d %d\n",mnem, label, curAddr, tempSym->address, relativeAddr);
+               //printf("\t%s %s %d %d %d\n",mnem, label, curAddr, tempSym->address, relativeAddr);
                fprintf(out, "\t %s %s %d\n", mnem, reg1, relativeAddr);
             }
             else if( strcmp(temp, "addi") == 0)
@@ -258,7 +259,7 @@ void replaceSymbols(FILE* f, Symbol* sym)
                int lblAddr = getLabelAddress(label, sym);
                if(lblAddr != -1)
                {
-                  printf("\t %s %s %s %d\n", mnem, reg1, reg2, lblAddr);
+                  //printf("\t %s %s %s %d\n", mnem, reg1, reg2, lblAddr);
                   fprintf(out, "\t %s %s %s %d\n", mnem, reg1, reg2, lblAddr);
                }
                else
@@ -275,12 +276,12 @@ void replaceSymbols(FILE* f, Symbol* sym)
                //reg1 = strtok(reg1, ",");
                //reg2 = strtok(reg2, ",");
                Symbol* tempSym = getSymbol(label, sym);
-               printSymbol(tempSym);
+               //printSymbol(tempSym);
                
-               printf("\t%s %s %d %d\n",mnem, label, curAddr, (tempSym->address)>>2);
+               //printf("\t%s %s %d %d\n",mnem, label, curAddr, (tempSym->address)>>2);
                fprintf(out, "\t%s %d\n", mnem, (tempSym->address)>>2);
 
-               printf("\t%s %d\n", mnem, (tempSym->address)>>2);
+               //printf("\t%s %d\n", mnem, (tempSym->address)>>2);
             }
             else if(strcmp(temp, "lw") == 0)
             {
@@ -293,11 +294,11 @@ void replaceSymbols(FILE* f, Symbol* sym)
                //reg2 = strtok(reg2, ",");
                char* label = strtok(offs, "(");
                char* offset = strtok(NULL, ")");
-               printf("GGG: %s %s\n", label, offset);
+               //printf("GGG: %s %s\n", label, offset);
                int lblAddr = getLabelAddress(label, sym);
                if(lblAddr != -1)
                {
-                  printf("\t %s %s %d(%s)\n", mnem, reg1, lblAddr, offset);
+                  //printf("\t %s %s %d(%s)\n", mnem, reg1, lblAddr, offset);
                   fprintf(out, "\t %s %s %d(%s)\n", mnem, reg1, lblAddr, offset);
                }
                else

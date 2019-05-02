@@ -93,11 +93,11 @@ static MIPSInstruction mipsTable[NUM_INSTRUCTIONS] = {
  */	
 ParseResult* parseASM(const char* const pASM) {
    char* mnem = calloc(8, sizeof(char));
-	char* temp = calloc(50, sizeof(char));
-	strcpy(temp, pASM);
+	char* temp = calloc(128, sizeof(char));
+	strncpy(temp, pASM, 127);
 	sscanf(temp,"%s", mnem);
 	char* opcode = findOpcode(mnem);
-   //printf("%s\n", pASM); 
+   ////printf("%s\n", pASM); 
    free(mnem);
    free(temp);
 
@@ -120,8 +120,8 @@ ParseResult* parseASM(const char* const pASM) {
 static ParseResult* parseRType(const char* const pASM)
 {
 	ParseResult* res = malloc(sizeof(ParseResult));
-	res->ASMInstruction = calloc(50, sizeof(char));
-	strcpy(res->ASMInstruction, pASM);
+	res->ASMInstruction = calloc(128, sizeof(char));
+	strncpy(res->ASMInstruction, pASM, 127);
    //printf("\t%s\n", pASM);
 	char* mnem = calloc(8,sizeof(char));
 	char* arg1 = calloc(10,sizeof(char));
@@ -149,9 +149,9 @@ static ParseResult* parseRType(const char* const pASM)
 
    if( strncmp(mnem, "syscall", 7) == 0)
    {
-      strcpy(res->Mnemonic, mnem);
+      strncpy(res->Mnemonic, mnem, 7);
       strcpy(res->Opcode, "000000");
-      strcpy(res->Funct, findFunct(mnem));
+      strncpy(res->Funct, findFunct(mnem), 6);
       strcpy(res->Shamt, "00000");
       strcpy(res->RS, "00000");
       strcpy(res->RT, "00000");
@@ -161,19 +161,19 @@ static ParseResult* parseRType(const char* const pASM)
    else
    {
       sscanf(pASM,"%*s %s %s %s", arg1, arg2, arg3);
-      printf("%s %s %s %s\n",mnem, arg1, arg2, arg3);
+      //printf("%s %s %s %s\n",mnem, arg1, arg2, arg3);
 
       arg1 = strtok(arg1, ",");
       arg2 = strtok(arg2, ",");
 
       if( strncmp(mnem, "srav", 4) == 0 )
       {
-         strcpy(res->Mnemonic, mnem);
-         strcpy(res->Opcode, findOpcode(mnem));
-         strcpy(res->Funct, findFunct(mnem));
-         strcpy(res->rdName, arg1);
-         strcpy(res->rtName, arg2);
-         strcpy(res->rsName, arg3);
+         strncpy(res->Mnemonic, mnem, 7);
+         strncpy(res->Opcode, findOpcode(mnem), 6);
+         strncpy(res->Funct, findFunct(mnem), 6);
+         strncpy(res->rdName, arg1, 5);
+         strncpy(res->rtName, arg2, 5);
+         strncpy(res->rsName, arg3, 5);
          res->rd = findRegister(arg1);
          res->rt = findRegister(arg2);
          res->rs = findRegister(arg3);
@@ -188,21 +188,21 @@ static ParseResult* parseRType(const char* const pASM)
          free(rdBin);
 
          char* rsBin = toBinary(res->rs, 5);
-         strcpy(res->RS, rsBin);
+         strncpy(res->RS, rsBin, 5);
          free(rsBin);
 
          char* rtBin = toBinary(res->rt, 5);
-         strcpy(res->RT, rtBin);
+         strncpy(res->RT, rtBin, 5);
          free(rtBin);
       }
 
       else if( strncmp(mnem, "sll", 3) == 0 || strncmp(mnem, "sra\0", 4) == 0)
       {
-         strcpy(res->Mnemonic, mnem);
+         strncpy(res->Mnemonic, mnem, 7);
          strcpy(res->Opcode, findOpcode(mnem));
-         strcpy(res->Funct, findFunct(mnem));
-         strcpy(res->rdName, arg1);
-         strcpy(res->rtName, arg2);
+         strncpy(res->Funct, findFunct(mnem), 6);
+         strncpy(res->rdName, arg1, 5);
+         strncpy(res->rtName, arg2, 5);
          res->rd = findRegister(arg1);
          res->rt = findRegister(arg2);
 
@@ -213,41 +213,41 @@ static ParseResult* parseRType(const char* const pASM)
          free(shamBin);
 
          char* rdBin = toBinary(res->rd, 5);
-         strcpy(res->RD, rdBin);
+         strncpy(res->RD, rdBin, 5);
          free(rdBin);
 
          strcpy(res->RS, "00000");
 
          char* rtBin = toBinary(res->rt, 5);
-         strcpy(res->RT, rtBin);
+         strncpy(res->RT, rtBin, 5);
          free(rtBin);
       }
       else
       {
-         strcpy(res->Mnemonic, mnem);
-         strcpy(res->Opcode, findOpcode(mnem));
-         strcpy(res->Funct, findFunct(mnem));
+         strncpy(res->Mnemonic, mnem, 7);
+         strncpy(res->Opcode, findOpcode(mnem), 6);
+         strncpy(res->Funct, findFunct(mnem), 6);
          strcpy(res->Shamt, "00000");
-         strcpy(res->rdName, arg1);
-         strcpy(res->rsName, arg2);
-         strcpy(res->rtName, arg3);
+         strncpy(res->rdName, arg1, 5);
+         strncpy(res->rsName, arg2, 5);
+         strncpy(res->rtName, arg3, 5);
          res->rd = findRegister(arg1);
          res->rs = findRegister(arg2);
          res->rt = findRegister(arg3);
 
-         printf("%s\n", arg1);
-         printf("%d\n", res->rd);
+         //printf("%s\n", arg1);
+         //printf("%d\n", res->rd);
          char* rdBin = toBinary(res->rd, 5);
-         strcpy(res->RD, rdBin);
+         strncpy(res->RD, rdBin, 5);
          free(rdBin);
-         printf("%s\n", res->RD);
+         //printf("%s\n", res->RD);
 
          char* rsBin = toBinary(res->rs, 5);
-         strcpy(res->RS, rsBin);
+         strncpy(res->RS, rsBin, 5);
          free(rsBin);
 
          char* rtBin = toBinary(res->rt, 5);
-         strcpy(res->RT, rtBin);
+         strncpy(res->RT, rtBin, 5);
          free(rtBin);
 
       }
@@ -275,8 +275,8 @@ static ParseResult* parseIType(const char* const pASM)
 {
 	ParseResult* res = malloc(sizeof(ParseResult));
 
-	res->ASMInstruction = calloc(50, sizeof(char));
-   strcpy(res->ASMInstruction, pASM);
+	res->ASMInstruction = calloc(128, sizeof(char));
+   strncpy(res->ASMInstruction, pASM, 128);
 	char* mnem = calloc(6,sizeof(char));
 	char* arg1 = calloc(10,sizeof(char));
 	int16_t imm = 0;
@@ -286,7 +286,7 @@ static ParseResult* parseIType(const char* const pASM)
 
 	//Set all fields to default unused value, then fill in the fields that we use as
 	//we go along, thus in the end only the unused fields will still have the default value
-	res->Mnemonic = calloc(6, sizeof(char));
+	res->Mnemonic = calloc(8, sizeof(char));
 	res->rdName = NULL;
 	res->rsName = NULL;
 	res->rtName = calloc(6, sizeof(char));
@@ -304,10 +304,10 @@ static ParseResult* parseIType(const char* const pASM)
 	res->IMM = calloc(17, sizeof(char));
    res->Machine = calloc(33, sizeof(char));
 
-	strcpy(res->Mnemonic, mnem);
-	strcpy(res->Opcode, findOpcode(mnem));
+	strncpy(res->Mnemonic, mnem, 7);
+	strncpy(res->Opcode, findOpcode(mnem), 6);
 
-	strcpy(res->rtName, arg1);
+	strncpy(res->rtName, arg1, 5);
 	res->rt = findRegister(arg1);
 	char* rtBin = toBinary(res->rt, 5);
 	strncpy(res->RT, rtBin, 5);
@@ -320,7 +320,7 @@ static ParseResult* parseIType(const char* const pASM)
 		
 		res->Imm = imm;
 		char* immBin = toBinary(imm, 16);
-		strcpy(res->IMM, immBin);
+		strncpy(res->IMM, immBin, 16);
 		free(immBin);
 		
 		res->rs = 0;
@@ -330,29 +330,29 @@ static ParseResult* parseIType(const char* const pASM)
 	else if(strcmp(mnem, "lw") == 0 || strcmp(mnem, "sw") == 0)
 	{
 	   char* arg2 = calloc(5, sizeof(char));
-      char* temp = calloc(55, sizeof(char));
-      strcpy(temp, pASM);
+      char* temp = calloc(128, sizeof(char));
+      strncpy(temp, pASM, 127);
       char* offs = calloc(55, sizeof(char));
 		sscanf(temp, "%*2s %*s %s", offs);
       char* imchar = strtok(offs,"(");
       imm = atoi(imchar);
       char* tempReg = strtok(NULL, ")");
-      strcpy(arg2, tempReg);
+      strncpy(arg2, tempReg, 5);
 
 
       //printf("LO: %s %s, %d(%s)\n", mnem, res->rtName, imm, arg2);
 		res->rsName = calloc(5, sizeof(char));
-		strcpy(res->rsName, arg2);
+		strncpy(res->rsName, arg2, 5);
 		res->rs = findRegister(res->rsName);
       //printf("%d\n", res->rs);
 		char* rsBin = toBinary(res->rs, 5);
 		res->RS = calloc(6, sizeof(char));
-		strcpy(res->RS, rsBin);
+		strncpy(res->RS, rsBin, 5);
 		free(rsBin);	
 
 		res->Imm = imm;
 		char* immBin = toBinary(imm, 16);
-		strcpy(res->IMM, immBin);
+		strncpy(res->IMM, immBin, 16);
 		free(immBin);
 
       free(offs);
@@ -376,8 +376,8 @@ static ParseResult* parseIType(const char* const pASM)
    else if(strcmp(mnem, "beq") == 0 || strcmp(mnem, "bne") == 0)
 	{
 	   char* arg2 = calloc(8,sizeof(char));
-      char* temp = calloc(55, sizeof(char));
-      strcpy(temp, pASM);
+      char* temp = calloc(128, sizeof(char));
+      strncpy(temp, pASM, 127);
 		sscanf(temp, "%*s %*s %s %"SCNd16"", arg2, &imm);
       arg2 = strtok(arg2, ",");
       
@@ -404,7 +404,7 @@ static ParseResult* parseIType(const char* const pASM)
 
 		res->Imm = imm;
 		char* immBin = toBinary(imm, 16);
-		strcpy(res->IMM, immBin);
+		strncpy(res->IMM, immBin, 16);
 		free(immBin);
 
 		free(arg2);
@@ -416,7 +416,7 @@ static ParseResult* parseIType(const char* const pASM)
 		
 		res->Imm = imm;
 		char* immBin = toBinary(imm, 16);
-		strcpy(res->IMM, immBin);
+		strncpy(res->IMM, immBin, 16);
 		free(immBin);
 		
       res->rsName = calloc(7, sizeof(char));
@@ -434,8 +434,8 @@ static ParseResult* parseIType(const char* const pASM)
    else
    {
 	   char* arg2 = calloc(10,sizeof(char));
-      char* temp = calloc(55, sizeof(char));
-      strcpy(temp, pASM);
+      char* temp = calloc(128, sizeof(char));
+      strncpy(temp, pASM, 127);
 		sscanf(temp, "%*s %*s %s %"SCNd16"", arg2, &imm);
       //printf("INST: %s\n", temp);
       arg2 = strtok(arg2, ",");
@@ -451,7 +451,7 @@ static ParseResult* parseIType(const char* const pASM)
 
 		res->Imm = imm;
 		char* immBin = toBinary(imm, 16);
-		strcpy(res->IMM, immBin);
+		strncpy(res->IMM, immBin, 16);
       //printf("%d -> %s\n", imm, immBin);
 		free(immBin);
 
@@ -478,8 +478,8 @@ static ParseResult* parseJump(const char* const pASM)
 {
 	ParseResult* res = malloc(sizeof(ParseResult));
 
-	res->ASMInstruction = calloc(50, sizeof(char));
-   strcpy(res->ASMInstruction, pASM);
+	res->ASMInstruction = calloc(127, sizeof(char));
+   strncpy(res->ASMInstruction, pASM, 127);
 	char* mnem = calloc(6,sizeof(char));
 	char* target = calloc(27,sizeof(char));
 	sscanf(pASM, "%s %s ", mnem, target);
@@ -487,7 +487,7 @@ static ParseResult* parseJump(const char* const pASM)
 
 	//Set all fields to default unused value, then fill in the fields that we use as
 	//we go along, thus in the end only the unused fields will still have the default value
-	res->Mnemonic = calloc(6, sizeof(char));
+	res->Mnemonic = calloc(8, sizeof(char));
 	res->rdName = NULL;
 	res->rsName = NULL;
 	res->rtName = NULL;
@@ -505,8 +505,8 @@ static ParseResult* parseJump(const char* const pASM)
 	res->IMM = NULL;
    res->Machine = calloc(33, sizeof(char));
 
-	strcpy(res->Mnemonic, mnem);
-	strcpy(res->Opcode, findOpcode(mnem));
+	strncpy(res->Mnemonic, mnem, 7);
+	strncpy(res->Opcode, findOpcode(mnem), 6);
 
    int tempTarget = atoi(target);
    char* targetBin = toBinary(tempTarget, 26);
@@ -556,7 +556,7 @@ static uint8_t findRegister(char* rName)
 	for(uint8_t i = 0; i < NUM_REGISTERS; i++)
 	{
 		char* cur = *(registerTable+i);
-		if(strcmp(rName, cur) == 0)
+		if(strncmp(rName, cur, 5) == 0)
 		{
 			return i;
 		}

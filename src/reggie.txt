@@ -1,0 +1,3 @@
+strncpy(res->rdName, arg1, 7);
+strncpy(res->rtName, arg2, 7);
+strncpy(res->rsName, arg3, 7);
