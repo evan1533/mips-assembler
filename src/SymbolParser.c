@@ -208,11 +208,11 @@ Symbol* parseDataSymbols(FILE* f, Symbol* tail)
             cur = initSymbol(label, symType, data, address, dataAddr);
             //printf("\t%s\n", data);
 
-            printf("\tADDR: 0x%08X\n", dataAddr);
+            //printf("\tADDR: 0x%08X\n", dataAddr);
             makeDataRaw(cur, tail);
-            printf("\t%s\n", label);
-            printf("\t%s\n", data);
-            printf("\t0x%x + 0x%x = 0x%x\n\n\n", dataAddr, cur->size, cur->size+dataAddr);
+            //printf("\t%s\n", label);
+            //printf("\t%s\n", data);
+            //printf("\t0x%x + 0x%x = 0x%x\n\n\n", dataAddr, cur->size, cur->size+dataAddr);
             dataAddr += (cur->size);
             
             tail->next = cur;
@@ -390,7 +390,7 @@ void makeDataRaw(Symbol* sym, Symbol* prev)
                count++;
             }
             
-            printf("TOK %s\n", token);
+            //printf("TOK %s\n", token);
          }
       }
       
@@ -402,7 +402,7 @@ void makeDataRaw(Symbol* sym, Symbol* prev)
          strcat(raw, "\n");
          free(binRes);
       }
-      printf("%d\n", count);
+      //printf("%d\n", count);
       sym->size = ((count)*4);
       sym->numRows = count/4;
       sym->dataLength = count;
