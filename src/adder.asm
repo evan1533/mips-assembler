@@ -7,6 +7,8 @@
 message:    .asciiz "The sum of the numbers in the array is: "
 values:     .word    2, 3, 5, 7, 11, 13, 17, 19, 23, 29  # array of 10 words
 num_values: .word    10    # size of array
+sweet_nums: .word	 1, 1, 2, 3, 5, 8, 13, 21, 34, 55, 89 # 11 fibonacci numbers
+num_fib:	.word	 11
 sum:        .word    0     # running total
 
 .text
