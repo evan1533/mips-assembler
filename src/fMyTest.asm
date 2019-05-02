@@ -24,11 +24,11 @@ main:
          addiu $t0, $t1, 4500
          
          add $t3, $s0, $s1
-#        la    $t0, val01
-#        la    $t1, val02
+         la    $t0, val01
+         la    $t1, val02
          la    $t2, val03
-#
+ 
          lw    $s0, 0($t0)
-#        lw    $s1, 4($t1)
+         lw    $s1, 4($t1)
          
-#        sw    $s0, -40($t3)
+         sw    $s0, -40($t3)
