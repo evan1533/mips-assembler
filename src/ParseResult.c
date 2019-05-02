@@ -41,7 +41,7 @@
  */
 void clearResult(ParseResult* const pPR)
 {   
-   if(strcmp(pPR->Opcode, "000000") == 0)
+   if(strcmp(pPR->Opcode, "000000") == 0 || strcmp(pPR->Opcode, "011100") == 0)
    {
       free(pPR->rdName);
 	   free(pPR->RD);

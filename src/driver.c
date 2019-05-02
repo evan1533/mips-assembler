@@ -67,7 +67,8 @@ int main(int argc, char** argv)
    }
    
    //printf("%s\n", inFile);
-   FILE *in = fopen(inFile, "r");
+   FILE *in;
+   in = fopen(inFile, "r");
    printf("Removing comments...\n");
    removeComments(in);
    FILE* clean = fopen("cleaned.asm", "r");

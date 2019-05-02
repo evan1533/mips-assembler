@@ -15,7 +15,6 @@ val01:  .word  4132343
         lw   $s4, 0($s1)
         add  $s1, $zero, $s0
         mul  $s3, $s1, $s2
-
         beq  $zero, $zero, test
 again:
         mul  $s4, $s1, $s1

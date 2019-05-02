@@ -12,7 +12,6 @@ static Symbol* getSymbol(char* label, Symbol* sym);
 
 void removeComments(FILE* f)
 {
-   rewind(f);
    char buf[555];
    FILE* out = fopen("cleaned.asm", "w");
    bool dataParsing = false;
@@ -31,12 +30,14 @@ void removeComments(FILE* f)
       {
          dataParsing = true;
          fputs(buf, out);
+         free(firstWord);
          continue;
       }
       else if(strncmp(firstWord, ".text", 5) == 0)
       {
          dataParsing = false;
          fputs(buf, out);
+         free(firstWord);
          continue;
       }
 
@@ -86,6 +87,11 @@ void removeComments(FILE* f)
                      if(buf[i] == '(')
                      {
                         hasLabel = false;
+                        break;
+                     }
+                     if( buf[i] == '\0' )
+                     {
+                        break;
                      }
                   }
                   if(hasLabel)
@@ -141,7 +147,6 @@ void removeComments(FILE* f)
             }
          }
 
-         free(firstWord);
       }
       else
       {
@@ -162,6 +167,7 @@ void removeComments(FILE* f)
             else if (buf[i] == EOF)
             {
                fputc( EOF, out);
+               free(firstWord);
                break;
             }
             
@@ -178,6 +184,8 @@ void removeComments(FILE* f)
 
          }
       }
+
+      free(firstWord);
    }
    fclose(out);
 }
