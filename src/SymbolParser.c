@@ -112,28 +112,32 @@ Symbol* parseTextSymbols(FILE* f, Symbol* tail)
          if(strlen(buf) > 1)
          {
             Symbol* cur;
-            char* label = calloc(50, sizeof(char));
+            char templabel[256];
             //printf("\tScanning label...\n");
-            sscanf(buf, "%s", label);
-   
-            int bufLen = strlen(buf)-1;
-            if(buf[bufLen-1] == ':')
-            {
-               //printf("\tLBL: %s\n", label);
-               char* address = toBinary(textAddr, 32);
-               label = strtok(label, ":");
+            strncpy(templabel, buf, 256);
 
-               cur = initSymbol(label, TEXT, NULL, address, textAddr);
-               tail->next = cur;
-               tail = cur;
-               //printf("%s", buf);
-            }
-            else if (bufLen > 0)
-            {
-               //printf("\t%X -> %s\n", textAddr, buf);
-               textAddr+=4;
-               free(label);
-            }
+			
+			char* label = strtok(templabel, " \t\n#");
+			int bufLen = strlen(label)-1;
+			if (label[bufLen] == ':')
+			{
+			   printf("\tLBL: %s\n", label);
+			   char* address = toBinary(textAddr, 32);
+			   
+			   label = strtok(label, ":");
+			   char* symLabel = calloc(50, sizeof(char));
+			   strncpy(symLabel, label, 50);
+
+			   cur = initSymbol(symLabel, TEXT, NULL, address, textAddr);
+			   tail->next = cur;
+			   tail = cur;
+			   //printf("%s", buf);
+			}
+			else if (bufLen > 0 && label != NULL)
+			{
+			   printf("\t%X -> %s", textAddr, buf);
+			   textAddr+=4;
+			}
             //printSymbol(cur);
          }
       }

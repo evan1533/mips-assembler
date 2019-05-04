@@ -204,7 +204,7 @@ void replaceSymbols(FILE* f, Symbol* sym)
    {
       char* temp = calloc(100, sizeof(char));
       sscanf(buf, "%s", temp);
-      if(strncmp(".text", temp, 6) == 0)
+      if(strncmp(".text", temp, 5) == 0)
       {
          parsing = true;
          fprintf(out, "%s", buf);
@@ -213,7 +213,7 @@ void replaceSymbols(FILE* f, Symbol* sym)
       }
       if(parsing)
       {
-         //printf("%s\n", temp);
+        //printf("%s\n", temp);
          if(isLabelInstruction(temp))
          {
             if( strcmp(temp, "beq") == 0 || strcmp(temp, "bne") == 0)
@@ -228,9 +228,17 @@ void replaceSymbols(FILE* f, Symbol* sym)
                //reg1 = strtok(reg1, ",");
                //reg2 = strtok(reg2, ",");
                Symbol* tempSym = getSymbol(label, sym);
-               int relativeAddr = (tempSym->address - (curAddr+4))/4;
+			   if(tempSym)
+			   {
+				int relativeAddr = (tempSym->address - (curAddr+4))/4;
+				fprintf(out, "\t %s %s %s %d\n", mnem, reg1, reg2, relativeAddr);
+			//printf("\t%s %s %x %x %d\n",mnem, label, curAddr+4, tempSym->address, relativeAddr);
+			   }
+			   else 
+			   {
+				  //printf("%s\n", label);
+			   }
                //printf("\t%s %s %d %d %d\n",mnem, label, curAddr, tempSym->address, relativeAddr);
-               fprintf(out, "\t %s %s %s %d\n", mnem, reg1, reg2, relativeAddr);
             }
             else if( strcmp(temp, "blez") == 0 || strcmp(temp, "bgtz") == 0)
             {
@@ -328,6 +336,7 @@ void replaceSymbols(FILE* f, Symbol* sym)
 
          if(isInstruction(temp))
          {
+		//printf("\n%0x\n", curAddr);
             curAddr+=4;
          }
 
