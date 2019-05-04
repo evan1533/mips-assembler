@@ -13,7 +13,7 @@ HFILES = ASMParser.h ParseResult.h
 TARGET = assemble
 
 assembler: $(CFILES)
-	$(CC) $(CFLAGS) -o $(TARGET) $(CFILES) $(HFILES)
+	$(CC) $(CFLAGS) -o $(TARGET) $(CFILES) 
 
 clean:
 	$(RM) $(TARGET)
