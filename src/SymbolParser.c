@@ -196,12 +196,12 @@ Symbol* parseDataSymbols(FILE* f, Symbol* tail)
             
             if(symType == WORD)
             {
-               //printf("B4: %08X\n", dataAddr);
+               printf("B4: %08X\n", dataAddr);
                while(dataAddr%4 != 0)
                {
                   dataAddr++;
                }
-               //printf("AF: %08X\n", dataAddr);
+               printf("AF: %08X\n", dataAddr);
             }
             char* address = toBinary(dataAddr, 32);
          
@@ -380,18 +380,19 @@ void makeDataRaw(Symbol* sym, Symbol* prev)
          {
             values[0] = atoi(token);
             count = 1;
+            printf("TOK %d %s\n",count, token);
          }
 
          while(token != NULL)
          {
             token = strtok(NULL, ", ");
-            if(token!=NULL)
+            if(token!=NULL && atoi(token))
             {
                values[count] = atoi(token);
                count++;
             }
             
-            //printf("TOK %s\n", token);
+            printf("TOK %d %s\n",count, token);
          }
       }
       

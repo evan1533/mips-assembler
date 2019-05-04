@@ -136,7 +136,7 @@ void parseInstructions(FILE* f, FILE* out, Symbol* sym)
    //printf("\tPASINg TIME\n"); 
    while(fgets(buf, 555, f))
    {
-      char* temp = calloc(100, sizeof(char));
+      char* temp = calloc(256, sizeof(char));
       sscanf(buf, "%s", temp);
       if(strncmp(".text", temp, 6) == 0)
       {

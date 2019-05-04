@@ -1,9 +1,7 @@
 0x00002000:  message
 0x0000202C:  values
-0x00002058:  num_values
-0x00002060:  sweet_nums
-0x00002090:  num_fib
-0x00002090:  sum
+0x00002054:  num_values
+0x00002058:  sum
 0x00000000:  main
 0x0000001C:  loop
 0x00000028:  chk
