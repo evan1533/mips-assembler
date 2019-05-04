@@ -16,7 +16,7 @@ loop1:
         addiu  $s0, $s1, -4738
         beq    $t0, $t1, loop1
         sll    $s3, $s2, 16
-        
+
         # nested do-while loops
 loop2:
         srav   $v0, $s7, $t0

@@ -28,7 +28,7 @@ main:
         lui    $t1, -1             # load 0xFFFF to top half of $t1
 
 # Check basic R-type and I-type instructions
-label1:        
+label1:
         add    $t4, $t2, $t3
         addi   $s0, $s0, 31214
         addu   $s1, $s1, $s2
@@ -46,7 +46,7 @@ label3:
         sra    $s0, $s1, 17
         srav   $s7, $s2, $s0
         sub    $t0, $zero, $s1
-        
+
 # Check some conditional branch instructions and j
         beq    $t1, $a0, label1
         blez   $t3, label2
