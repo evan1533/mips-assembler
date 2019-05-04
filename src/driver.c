@@ -69,6 +69,12 @@ int main(int argc, char** argv)
    //printf("%s\n", inFile);
    FILE *in;
    in = fopen(inFile, "r");
+   if(!in)
+   {
+      printf("ERROR: File \"%s\" not found in current directory\n", inFile);
+      return 1;
+   }
+
    printf("Removing comments...\n");
    removeComments(in);
    FILE* clean = fopen("cleaned.asm", "r");
