@@ -234,9 +234,10 @@ clean() {
 
    # Verify presence of named file
    tarFile="$2"
-   tarFile=${tarFile##*/}
    if [ ! -e $tarFile ]; then
-      echo "The file $tarFile does not exist."      exit 4
+      echo "The file $tarFile does not exist."
+      echo $Terminus >> $Log
+      exit 4
    fi
 
    # Verify parameter is really a tar file

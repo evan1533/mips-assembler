@@ -28,7 +28,7 @@ main:
         lui    $t1, -1             # load 0xFFFF to top half of $t1
 
 # Check basic R-type and I-type instructions
-label1:
+label1: 
         add    $t4, $t2, $t3
         addi   $s0, $s0, 31214
         addu   $s1, $s1, $s2
