@@ -83,7 +83,7 @@ int main(int argc, char** argv)
    FILE *out = fopen(outFile, "w");
    printf("Parsing symbols...\n");
    Symbol* res = parseSymbols(clean);
-  /*   Symbol* temp = res->next;
+     /*Symbol* temp = res->next;
      while(temp != NULL)
      {
          printSymbol(temp);
